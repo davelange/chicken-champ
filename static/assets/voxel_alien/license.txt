@@ -1,0 +1,11 @@
+Model Information:
+* title:	Voxel Alien
+* source:	https://sketchfab.com/3d-models/voxel-alien-2eba8fe0788947b7836250594f8aa39e
+* author:	VoxelPerlers (https://sketchfab.com/VoxelPerlers)
+
+Model License:
+* license type:	CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions can not be distributed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Voxel Alien" (https://sketchfab.com/3d-models/voxel-alien-2eba8fe0788947b7836250594f8aa39e) by VoxelPerlers (https://sketchfab.com/VoxelPerlers) licensed under CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)

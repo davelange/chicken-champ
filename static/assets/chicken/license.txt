@@ -1,0 +1,11 @@
+Model Information:
+* title:	8-Bit Chicken
+* source:	https://sketchfab.com/3d-models/8-bit-chicken-a75be71f3a474575a282b223ac5fa8b7
+* author:	Faraaz (https://sketchfab.com/f.ahmad480)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "8-Bit Chicken" (https://sketchfab.com/3d-models/8-bit-chicken-a75be71f3a474575a282b223ac5fa8b7) by Faraaz (https://sketchfab.com/f.ahmad480) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

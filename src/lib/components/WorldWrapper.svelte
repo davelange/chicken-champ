@@ -4,15 +4,16 @@
 	import OrthoCamera from './OrthoCamera.svelte';
 	import Lights from './Lights.svelte';
 	import { BoxGeometry, MeshBasicMaterial } from 'three';
+	import Floor from './Floor.svelte';
+	import Avatar from './Avatar.svelte';
 </script>
 
 <Canvas>
 	<World>
 		<OrthoCamera />
 		<Lights />
-		<T.Mesh>
-			<T.BoxGeometry args={[2, 2, 2]} />
-			<T.MeshBasicMaterial color="red" />
-		</T.Mesh>
+
+		<Avatar />
+		<Floor />
 	</World>
 </Canvas>
