@@ -1,9 +1,12 @@
 <script>
 	import WorldWrapper from '$lib/components/WorldWrapper.svelte';
+	import { Canvas } from '@threlte/core';
 </script>
 
 <div>
-	<WorldWrapper />
+	<Canvas>
+		<WorldWrapper />
+	</Canvas>
 </div>
 
 <style>
