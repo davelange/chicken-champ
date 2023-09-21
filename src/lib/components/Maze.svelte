@@ -5,6 +5,7 @@
 	import { isElement } from '$lib/utils';
 	import type { Triplet } from '../../types';
 	import type { Structure } from '$lib/maze-generator';
+	import { game } from '$lib/game';
 
 	export let entrance: Triplet;
 	export let exit: Triplet;
@@ -27,10 +28,11 @@
 	<Collider
 		sensor
 		shape="cuboid"
-		args={[1, 3, 3]}
+		args={[0.1, 3, 3]}
 		on:sensorenter={(data) => {
-			//$game.inMaze = isElement(data.targetRigidBody, 'avatar');
-            if(isElement(data.targetRigidBody, 'avatar')) console.log("IN")
+			if (isElement(data.targetRigidBody, 'avatar') && $game.status === 'idle') {
+				$game.status = 'inMaze';
+			}
 		}}
 	/>
 </T.Group>
@@ -38,12 +40,11 @@
 	<Collider
 		sensor
 		shape="cuboid"
-		args={[1, 3, 3]}
+		args={[0.1, 3, 3]}
 		on:sensorenter={(data) => {
-			/* if (isElement(data.targetRigidBody, 'avatar')) {
-				$game.inMaze = false;
-			} */
-            if(isElement(data.targetRigidBody, 'avatar')) console.log("OUT")
+			if (isElement(data.targetRigidBody, 'avatar') && $game.status === 'inMaze') {
+				$game.status = 'outMaze';
+			}
 		}}
 	/>
 </T.Group>

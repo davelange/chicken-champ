@@ -15,7 +15,7 @@
 
 	let rigidBody: RapierRigidBody;
 	let direction = { x: 0, y: 0, z: 0 };
-	let moveBy = 4.2;
+	let moveBy = 3;
 	let fallen = false;
 	let qdKeystroke: KeyQueue['map'] | undefined = undefined;
 
@@ -57,11 +57,11 @@
 			},
 			{
 				name: 'walkY',
-				force: { y: 2 },
+				force: { y: 1.5 },
 				duration: 15,
 				easing: { y: 'easeOutCubic' },
 				next: {
-					force: { y: -2 },
+					force: { y: -1.5 },
 					duration: 20,
 					easing: { y: 'easeOutBounce' },
 					onEnd: () => {
@@ -153,7 +153,7 @@
 		gravityScale={4}
 		enabledRotations={[true, false, true]}
 		userData={{ name: 'avatar' }}
-		angularDamping={3}
+		angularDamping={2}
 	>
 		<T.Group position={[0, 1.8, 0]}>
 			<Collider
