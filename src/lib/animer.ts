@@ -4,7 +4,6 @@ import type { RigidBody as RapierRigidBody, Rotation, Vector } from '@dimforge/r
 import { ease, type Easing } from '$lib/easing';
 import { Euler, Object3D, Vector3, Vector4 } from 'three';
 import { deepRound } from '$lib/utils';
-//import { useAnimers } from './useAnimers';
 
 type Axes<T> = {
 	x: T;
@@ -12,7 +11,7 @@ type Axes<T> = {
 	z: T;
 };
 type AnimationOptions = {
-	type?: 'translate' | 'rotate';
+	type: 'translate' | 'rotate';
 	force: Partial<Axes<number>>;
 	duration: number;
 	easing?: Partial<Axes<Easing>>;
@@ -36,7 +35,7 @@ type AnimerWritableStore = {
 };
 export type AnimerStore = Writable<AnimerWritableStore> & {
 	go: (options: AnimationOptions[]) => void;
-	setBody: (options: { body?: RapierRigidBody; body3D?: Object3D }) => void;
+	create: (options: { body?: RapierRigidBody; body3D?: Object3D }) => void;
 	skip: (name: string) => void;
 	stop: () => void;
 };
@@ -56,7 +55,7 @@ export function animer() {
 	animerStore.subscribe((val) => (ref = val));
 
 	const wrapStore = (): AnimerStore => {
-		function setBody(options: { body?: RapierRigidBody; body3D?: Object3D }) {
+		function create(options: { body?: RapierRigidBody; body3D?: Object3D }) {
 			if (!options.body && !options.body3D) return;
 
 			animerStore.update((st) => {
@@ -90,7 +89,6 @@ export function animer() {
 				} else if (options.type === 'translate') {
 					if (ref.body) {
 						st.translateTrack = ref.body.translation();
-                        console.log(st.translateTrack)
 					} else if (ref.body3D) {
 						st.translateTrack = ref.body3D.position;
 					}
@@ -226,7 +224,7 @@ export function animer() {
 		return {
 			...animerStore,
 			go,
-			setBody,
+			create,
 			stop,
 			skip
 		};

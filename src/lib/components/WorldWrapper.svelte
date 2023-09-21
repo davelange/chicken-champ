@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { T, Canvas } from '@threlte/core';
 	import { Debug, World } from '@threlte/rapier';
 	import { interactivity } from '@threlte/extras';
 
@@ -9,6 +8,7 @@
 	import Avatar from './Avatar.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import { keyq } from '$lib/keyq';
+	import { T } from '@threlte/core';
 
 	interactivity();
 
@@ -27,4 +27,6 @@
 
 	<Avatar />
 	<Floor />
+	<Debug />
+	<T.AxesHelper scale={10} />
 </World>

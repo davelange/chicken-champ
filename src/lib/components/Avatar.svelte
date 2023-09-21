@@ -1,37 +1,40 @@
 <script lang="ts">
 	import { T, useThrelte } from '@threlte/core';
+	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
 	import { Collider, RigidBody } from '@threlte/rapier';
 	import { Vector3, Vector4 } from 'three';
 	import AvatarModel from './AvatarModel.svelte';
 	import { keyq, type KeyQueue } from '$lib/keyq';
 	import { animer } from '$lib/animer';
-	import avatar from '$lib/avatar';
+	import type { Triplet } from '../../types';
+	import { avatarTracker } from '$lib/avatarTracker';
+	import { onMount } from 'svelte';
 
-	export let initialPosition = [-40, 0, 0] as [x: number, y: number, z: number];
+	export let initialPosition = [0, 10, 0] satisfies Triplet;
 
+	let rigidBody: RapierRigidBody;
 	let direction = { x: 0, y: 0, z: 0 };
 	let moveBy = 3;
 
 	let anim = animer();
 	let { scene } = useThrelte();
 
-	// init stuff
-	$: if ($avatar.tracker && $avatar.rigidBody) {
-		console.log($avatar.rigidBody);
+	onMount(() => {
+		scene.add($avatarTracker);
+		avatarTracker.update(new Vector3(...initialPosition));
+	});
 
-		anim.setBody({
-			body: $avatar.rigidBody
+	$: if (rigidBody) {
+		anim.create({
+			body: rigidBody
 		});
-		$avatar.tracker.position.set(...initialPosition);
-		scene.add($avatar.tracker);
 	}
 
 	function move(map: KeyQueue['map']) {
-		if (!$avatar.tracker) return;
+		if (!$avatarTracker) return;
 
-		let pos = $avatar.rigidBody.translation();
-
-		$avatar.tracker.position.lerp(new Vector3(pos.x, pos.y, pos.z), 0.01);
+		let pos = rigidBody.translation();
+		avatarTracker.update(pos);
 
 		direction = { x: 0, y: 0, z: 0 };
 
@@ -60,6 +63,7 @@
 				duration: 10,
 				easing: { y: 'easeOutCubic' },
 				next: {
+					type: 'translate',
 					force: { y: -1 },
 					duration: 15,
 					easing: { y: 'easeOutBounce' }
@@ -69,43 +73,28 @@
 	}
 
 	function handleKey(map: KeyQueue['map']) {
-		if (
-			(!map.w && !map.a && !map.s && !map.d && !map.r) ||
-			!$avatar?.rigidBody ||
-			!$avatar.tracker
-		) {
+		if ((!map.w && !map.a && !map.s && !map.d && !map.r) || !rigidBody) {
 			return;
 		}
 
 		if (map.r) {
-			$avatar.rigidBody.setRotation(new Vector4(0, 0, 0), true);
+			rigidBody.setRotation(new Vector4(0, 0, 0), true);
 
 			anim.go([
 				{
+					type: 'translate',
 					force: { y: 10 },
 					duration: 40,
-					easing: { y: 'easeOutQuint' },
-					next: {
-						force: { y: -10 },
-						duration: 60,
-						easing: { y: 'easeOutQuint' }
-						/* onEnd: () => (fallen = false) */
-					}
+					easing: { y: 'easeOutQuint' }
 				}
 			]);
 
 			return;
 		}
 
-		/* if (fallen) {
+		if ($anim.inMotion) {
 			return;
 		}
-
-		if ($anim.inMotion) {
-			queuedKeystroke = { ...map };
-
-			return;
-		} */
 
 		move(map);
 	}
@@ -116,7 +105,7 @@
 <T.Group position={initialPosition}>
 	<RigidBody
 		type="dynamic"
-		bind:rigidBody={$avatar.rigidBody}
+		bind:rigidBody
 		gravityScale={4}
 		enabledRotations={[true, false, true]}
 		userData={{ name: 'avatar' }}
@@ -126,6 +115,5 @@
 		</T.Group>
 		<Collider mass={1} shape="cuboid" args={[0.8, 1.8, 0.8]} contactForceEventThreshold={2} />
 		<AvatarModel output={direction} />
-		<T.Mesh bind:mesh={$avatar.tracker} castShadow scale={[1, 1, 1]} position={initialPosition} />
 	</RigidBody>
 </T.Group>
