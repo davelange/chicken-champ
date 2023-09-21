@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { avatarTracker } from '$lib/avatarTracker';
+	import { debug } from '$lib/constants';
 	import { T } from '@threlte/core';
 	import { CameraHelper, DirectionalLight } from 'three';
 	import { DirectionalLightShadow } from 'three/src/lights/DirectionalLightShadow';
@@ -30,6 +31,8 @@
 	castShadow
 	target={$avatarTracker}
 />
-<T is={helperCamera} />
+{#if debug.shadowLight}
+	<T is={helperCamera} />
+{/if}
 <T.DirectionalLight position={[-3, 20, -10]} intensity={0.7} />
 <T.AmbientLight intensity={0.2} />

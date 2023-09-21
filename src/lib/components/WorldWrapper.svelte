@@ -12,6 +12,7 @@
 	import { T } from '@threlte/core';
 	import { MazeBuilder } from '$lib/maze-generator';
 	import Maze from './Maze.svelte';
+	import { debug } from '$lib/constants';
 
 	interactivity();
 
@@ -34,6 +35,10 @@
 	<Avatar initialPosition={avatarStartPoint} />
 	<Maze {maze} {entrance} {exit} />
 	<Floor />
-	<Debug />
-	<T.AxesHelper scale={10} />
+	{#if debug.world}
+		<Debug />
+	{/if}
+	{#if debug.axes}
+		<T.AxesHelper scale={10} />
+	{/if}
 </World>

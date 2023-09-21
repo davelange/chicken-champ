@@ -8,7 +8,7 @@ const store = writable(new Object3D());
 export function tracker() {
 	function update(position: Vector) {
 		store.update((store) => {
-			store.position.lerp(new Vector3(position.x, position.y, position.z), 0.1);
+			store.position.lerp(new Vector3(position.x, position.y, position.z), 0.01);
 
 			return store;
 		});

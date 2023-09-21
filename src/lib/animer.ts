@@ -1,9 +1,7 @@
 import { useFrame } from '@threlte/core';
 import { writable, type Writable } from 'svelte/store';
-import type { RigidBody as RapierRigidBody, Rotation, Vector } from '@dimforge/rapier3d-compat';
+import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
 import { ease, type Easing } from '$lib/easing';
-import { Euler, Object3D, Vector3, Vector4 } from 'three';
-import { deepRound } from '$lib/utils';
 
 type Axes<T> = {
 	x: T;
@@ -11,7 +9,6 @@ type Axes<T> = {
 	z: T;
 };
 type AnimationOptions = {
-	type: 'translate' | 'rotate';
 	force: Partial<Axes<number>>;
 	duration: number;
 	easing?: Partial<Axes<Easing>>;
@@ -27,16 +24,18 @@ type Animation = AnimationOptions & {
 type AnimerWritableStore = {
 	inMotion: boolean;
 	body: RapierRigidBody | undefined;
-	body3D: Object3D | undefined;
 	pool: Animation[];
 	id: number;
-	rotationTrack: Rotation | Euler;
-	translateTrack: Vector;
 };
 export type AnimerStore = Writable<AnimerWritableStore> & {
 	go: (options: AnimationOptions[]) => void;
-	create: (options: { body?: RapierRigidBody; body3D?: Object3D }) => void;
-	skip: (name: string) => void;
+	create: (options: { body?: RapierRigidBody }) => void;
+	skip: (
+		name: string,
+		options?: {
+			kill: boolean;
+		}
+	) => void;
 	stop: () => void;
 };
 
@@ -44,26 +43,19 @@ export function animer() {
 	const animerStore = writable<AnimerWritableStore>({
 		inMotion: false,
 		body: undefined,
-		body3D: undefined,
 		pool: [],
-		id: 0,
-		rotationTrack: new Vector4(0, 0, 0),
-		translateTrack: new Vector3(0, 0, 0)
+		id: 0
 	});
 
 	let ref: AnimerWritableStore;
 	animerStore.subscribe((val) => (ref = val));
 
 	const wrapStore = (): AnimerStore => {
-		function create(options: { body?: RapierRigidBody; body3D?: Object3D }) {
-			if (!options.body && !options.body3D) return;
+		function create(options: { body?: RapierRigidBody }) {
+			if (!options.body) return;
 
 			animerStore.update((st) => {
-				if (options.body3D) {
-					st.body3D = options.body3D;
-				} else {
-					st.body = options.body;
-				}
+				st.body = options.body;
 
 				return st;
 			});
@@ -76,26 +68,10 @@ export function animer() {
 					...options,
 					id,
 					frame: 1,
-					acc: { x: 0, y: 0, z: 0 },
-					type: options.type || 'translate'
+					acc: { x: 0, y: 0, z: 0 }
 				};
 
-				if (options.type === 'rotate') {
-					if (ref.body) {
-						st.rotationTrack = ref.body.rotation();
-					} else if (ref.body3D) {
-						st.rotationTrack = ref.body3D.rotation;
-					}
-				} else if (options.type === 'translate') {
-					if (ref.body) {
-						st.translateTrack = ref.body.translation();
-					} else if (ref.body3D) {
-						st.translateTrack = ref.body3D.position;
-					}
-				}
-
 				st.pool.push(anim);
-
 				st.id = id;
 
 				return st;
@@ -125,33 +101,46 @@ export function animer() {
 			});
 		}
 
-		function skip(name: string) {
+		function skip(
+			name: string,
+			options?: {
+				kill: boolean;
+			}
+		) {
 			let next: AnimationOptions | undefined;
 
 			animerStore.update((st) => {
 				st.pool = st.pool.filter((item) => {
 					if (item.name === name) {
-						next = item.next;
-						item?.onEnd && item.onEnd();
+						if (!options?.kill) {
+							next = item.next;
+							item?.onEnd && item.onEnd();
+						}
+
 						return false;
 					}
 
 					return true;
 				});
 
+				if (!st.pool.length && !next) {
+					st.inMotion = false;
+				}
+
 				return st;
 			});
 
-			if (next) addAnimToPool(next);
+			if (next) {
+				addAnimToPool(next);
+			}
 		}
 
 		useFrame(() => {
-			if (!ref.inMotion || (!ref?.body && !ref?.body3D)) {
+			if (!ref.inMotion || !ref?.body) {
 				return;
 			}
 
-			let applyTranslation = false;
-			let applyRotation = false;
+			const currentTranslation = ref.body.translation();
 
 			for (let i = 0; i < ref.pool.length; i++) {
 				const anim = ref.pool[i];
@@ -166,21 +155,7 @@ export function animer() {
 					const frEase = easedVal - anim.acc[ax];
 					anim.acc[ax] = anim.acc[ax] + frEase;
 
-					switch (anim.type) {
-						case 'translate':
-							applyTranslation = true;
-
-							ref.translateTrack[ax] += frEase * (anim.force[ax] || 0);
-
-							break;
-
-						case 'rotate':
-							applyRotation = true;
-
-							ref.rotationTrack[ax] += deepRound(frEase * (anim.force[ax] || 0));
-
-							break;
-					}
+					currentTranslation[ax] += frEase * (anim.force[ax] || 0);
 				}
 
 				if (anim.frame === anim.duration) {
@@ -202,21 +177,7 @@ export function animer() {
 				anim.frame++;
 			}
 
-			if (applyRotation) {
-				if (ref.body) {
-					ref.body.setRotation(ref.rotationTrack as Rotation, true);
-				} else if (ref.body3D) {
-					ref.body3D?.rotation.set(ref.rotationTrack.x, ref.rotationTrack.y, ref.rotationTrack.z);
-				}
-			}
-
-			if (applyTranslation) {
-				if (ref.body) {
-					ref.body.setTranslation(ref.translateTrack, true);
-				} else if (ref.body3D) {
-					ref.body3D.position.set(ref.translateTrack.x, ref.translateTrack.y, ref.translateTrack.z);
-				}
-			}
+			ref.body.setTranslation(currentTranslation, true);
 
 			animerStore.set(ref);
 		});
@@ -231,8 +192,6 @@ export function animer() {
 	};
 
 	const store = wrapStore();
-
-	//useAnimers.add(name, store);
 
 	return { ...animerStore, ...store };
 }

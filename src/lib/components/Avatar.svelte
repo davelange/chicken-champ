@@ -9,12 +9,15 @@
 	import type { Triplet } from '../../types';
 	import { avatarTracker } from '$lib/avatarTracker';
 	import { onMount } from 'svelte';
+	import { isElement } from '$lib/utils';
 
 	export let initialPosition = [0, 10, 0] satisfies Triplet;
 
 	let rigidBody: RapierRigidBody;
 	let direction = { x: 0, y: 0, z: 0 };
-	let moveBy = 3;
+	let moveBy = 4.2;
+	let fallen = false;
+	let qdKeystroke: KeyQueue['map'] | undefined = undefined;
 
 	let anim = animer();
 	let { scene } = useThrelte();
@@ -33,9 +36,6 @@
 	function move(map: KeyQueue['map']) {
 		if (!$avatarTracker) return;
 
-		let pos = rigidBody.translation();
-		avatarTracker.update(pos);
-
 		direction = { x: 0, y: 0, z: 0 };
 
 		if (map.w) {
@@ -50,23 +50,28 @@
 
 		anim.go([
 			{
-				type: 'translate',
 				name: 'walkXZ',
 				force: direction,
-				duration: 30,
+				duration: 35,
 				easing: { x: 'easeOutSine', z: 'easeOutSine' }
 			},
 			{
-				type: 'translate',
 				name: 'walkY',
-				force: { y: 1 },
-				duration: 10,
+				force: { y: 2 },
+				duration: 15,
 				easing: { y: 'easeOutCubic' },
 				next: {
-					type: 'translate',
-					force: { y: -1 },
-					duration: 15,
-					easing: { y: 'easeOutBounce' }
+					force: { y: -2 },
+					duration: 20,
+					easing: { y: 'easeOutBounce' },
+					onEnd: () => {
+						if (qdKeystroke) {
+							move(qdKeystroke);
+							qdKeystroke = undefined;
+						}
+						let pos = rigidBody.translation();
+						avatarTracker.update(pos);
+					}
 				}
 			}
 		]);
@@ -82,21 +87,60 @@
 
 			anim.go([
 				{
-					type: 'translate',
 					force: { y: 10 },
 					duration: 40,
-					easing: { y: 'easeOutQuint' }
+					easing: { y: 'easeOutQuint' },
+					next: {
+						force: { y: -10 },
+						duration: 60,
+						easing: { y: 'easeOutCubic' },
+						onEnd: () => (fallen = false)
+					}
 				}
 			]);
 
 			return;
 		}
 
+		if (fallen) {
+			return;
+		}
+
 		if ($anim.inMotion) {
+			// Queue max of 1 move to be played when current motion ends
+			qdKeystroke = { ...map };
+
 			return;
 		}
 
 		move(map);
+	}
+
+	// stop animer motion when avatar hits wall
+	function handleMainCollisionEnter({
+		targetRigidBody
+	}: {
+		targetRigidBody: RapierRigidBody | null;
+	}) {
+		if (isElement(targetRigidBody, 'maze')) {
+			anim.skip('walkXZ', {
+				kill: true
+			});
+			anim.skip('walkY', {
+				kill: true
+			});
+		}
+	}
+
+	// detect when heads touches floor (means avatar fell over)
+	function handleHeadCollisionEnter({
+		targetRigidBody
+	}: {
+		targetRigidBody: RapierRigidBody | null;
+	}) {
+		if (isElement(targetRigidBody, 'floor') || isElement(targetRigidBody, 'maze')) {
+			fallen = true;
+		}
 	}
 
 	keyq.subscribe(handleKey);
@@ -109,11 +153,23 @@
 		gravityScale={4}
 		enabledRotations={[true, false, true]}
 		userData={{ name: 'avatar' }}
+		angularDamping={3}
 	>
 		<T.Group position={[0, 1.8, 0]}>
-			<Collider sensor shape="cuboid" args={[0.8, 0.2, 0.8]} />
+			<Collider
+				sensor
+				shape="cuboid"
+				args={[0.8, 0.2, 0.8]}
+				on:sensorenter={handleHeadCollisionEnter}
+			/>
 		</T.Group>
-		<Collider mass={1} shape="cuboid" args={[0.8, 1.8, 0.8]} contactForceEventThreshold={2} />
+		<Collider
+			mass={1}
+			shape="cuboid"
+			args={[0.8, 1.8, 0.8]}
+			contactForceEventThreshold={2}
+			on:collisionenter={handleMainCollisionEnter}
+		/>
 		<AvatarModel output={direction} />
 	</RigidBody>
 </T.Group>
