@@ -1,20 +1,18 @@
 // source: https://easings.net
 
-export const EasingTypes = [
-	'easeOutCirc',
-	'easeOutBounce',
-	'easeOutQuart',
-	'easeInCirc',
-	'easeInExpo',
-	'easeOutQuad',
-	'easeOutQuint',
-	'easeOutCubic',
-	'easeOutSine',
-	'easeInSine',
-	'easeInCubic'
-] as const;
-
-export type Easing = (typeof EasingTypes)[number];
+export enum Easing {
+	OutCirc = 'easeOutCirc',
+	OutBounce = 'easeOutBounce',
+	OutQuart = 'easeOutQuart',
+	InCirc = 'easeInCirc',
+	InExpo = 'easeInExpo',
+	OutQuad = 'easeOutQuad',
+	OutQuint = 'easeOutQuint',
+	OutCubic = 'easeOutCubic',
+	OutSine = 'easeOutSine',
+	InSine = 'easeInSine',
+	InCubic = 'easeInCubic'
+}
 
 export function easeOutBounce(x: number): number {
 	const n1 = 7.5625;

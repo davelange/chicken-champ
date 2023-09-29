@@ -248,14 +248,14 @@ export class MazeBuilder {
 		let exit: Triplet = [0, 0, 0];
 
 		const unit = 4;
-		const offset = 10;
+		const offset = 8;
 
 		// exit and entrance are reversed
 		this.maze.forEach((row, rIdx) => {
 			row.forEach((col, cIdx) => {
 				if (col?.[0] === 'wall') {
 					out.push({
-						dimension: [unit, 5, unit],
+						dimension: [unit, 3, unit],
 						position: [(rIdx - offset) * unit, 0, (cIdx - offset) * unit]
 					} as Structure);
 				} else if (col.includes('exit')) {

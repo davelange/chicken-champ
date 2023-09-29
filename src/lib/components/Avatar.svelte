@@ -5,17 +5,20 @@
 	import { Vector3, Vector4 } from 'three';
 	import AvatarModel from './AvatarModel.svelte';
 	import { keyq, type KeyQueue } from '$lib/keyq';
-	import { animer } from '$lib/animer';
+	import { animer, type Axes } from '$lib/animer';
 	import type { Triplet } from '../../types';
 	import { avatarTracker } from '$lib/avatarTracker';
 	import { onMount } from 'svelte';
 	import { isElement } from '$lib/utils';
+	import { avatarConfigs } from '$lib/config/avatar';
+	import { Easing } from '$lib/easing';
 
 	export let initialPosition = [0, 10, 0] satisfies Triplet;
 
+	let config = avatarConfigs.heavy;
+
 	let rigidBody: RapierRigidBody;
-	let direction = { x: 0, y: 0, z: 0 };
-	let moveBy = 3;
+	let direction: Axes<number> = { x: 0, y: 0, z: 0 };	
 	let fallen = false;
 	let qdKeystroke: KeyQueue['map'] | undefined = undefined;
 
@@ -39,66 +42,49 @@
 		direction = { x: 0, y: 0, z: 0 };
 
 		if (map.w) {
-			direction.z -= moveBy;
+			direction.z -= config.moveBy;
 		} else if (map.a) {
-			direction.x -= moveBy;
+			direction.x -= config.moveBy;
 		} else if (map.d) {
-			direction.x += moveBy;
+			direction.x += config.moveBy;
 		} else if (map.s) {
-			direction.z += moveBy;
+			direction.z += config.moveBy;
 		}
 
-		anim.go([
-			{
-				name: 'walkXZ',
-				force: direction,
-				duration: 35,
-				easing: { x: 'easeOutSine', z: 'easeOutSine' }
-			},
-			{
-				name: 'walkY',
-				force: { y: 1.5 },
-				duration: 15,
-				easing: { y: 'easeOutCubic' },
-				next: {
-					force: { y: -1.5 },
-					duration: 20,
-					easing: { y: 'easeOutBounce' },
-					onEnd: () => {
-						if (qdKeystroke) {
-							move(qdKeystroke);
-							qdKeystroke = undefined;
-						}
-						let pos = rigidBody.translation();
-						avatarTracker.update(pos);
-					}
-				}
+		const motion = config.walkMotion(direction, () => {
+			if (qdKeystroke) {
+				move(qdKeystroke);
+				qdKeystroke = undefined;
 			}
-		]);
+			let pos = rigidBody.translation();
+			avatarTracker.update(pos);
+		});
+
+		anim.go(motion);
 	}
 
 	function handleKey(map: KeyQueue['map']) {
-		if ((!map.w && !map.a && !map.s && !map.d && !map.r) || !rigidBody) {
-			return;
-		}
-
-		if (map.r) {
+		if (map.r && fallen) {
 			rigidBody.setRotation(new Vector4(0, 0, 0), true);
 
 			anim.go([
 				{
 					force: { y: 10 },
 					duration: 40,
-					easing: { y: 'easeOutQuint' },
+					easing: { y: Easing.OutQuint },
 					next: {
 						force: { y: -10 },
 						duration: 60,
-						easing: { y: 'easeOutCubic' },
+						easing: { y: Easing.OutCubic },
 						onEnd: () => (fallen = false)
 					}
 				}
 			]);
 
+			return;
+		}
+
+		if ((!map.w && !map.a && !map.s && !map.d) || !rigidBody) {
 			return;
 		}
 
@@ -123,12 +109,7 @@
 		targetRigidBody: RapierRigidBody | null;
 	}) {
 		if (isElement(targetRigidBody, 'maze')) {
-			anim.skip('walkXZ', {
-				kill: true
-			});
-			anim.skip('walkY', {
-				kill: true
-			});
+			anim.stop();
 		}
 	}
 
@@ -138,7 +119,7 @@
 	}: {
 		targetRigidBody: RapierRigidBody | null;
 	}) {
-		if (isElement(targetRigidBody, 'floor') || isElement(targetRigidBody, 'maze')) {
+		if (isElement(targetRigidBody, 'floor')) {
 			fallen = true;
 		}
 	}
@@ -150,16 +131,17 @@
 	<RigidBody
 		type="dynamic"
 		bind:rigidBody
-		gravityScale={4}
+		gravityScale={config.gravityScale}
 		enabledRotations={[true, false, true]}
 		userData={{ name: 'avatar' }}
-		angularDamping={2}
+		angularDamping={config.angularDamping}
 	>
 		<T.Group position={[0, 1.8, 0]}>
 			<Collider
 				sensor
 				shape="cuboid"
 				args={[0.8, 0.2, 0.8]}
+				restitution={0.2}
 				on:sensorenter={handleHeadCollisionEnter}
 			/>
 		</T.Group>
@@ -167,7 +149,7 @@
 			mass={1}
 			shape="cuboid"
 			args={[0.8, 1.8, 0.8]}
-			contactForceEventThreshold={2}
+			contactForceEventThreshold={config.contactForceEventThreshold}
 			on:collisionenter={handleMainCollisionEnter}
 		/>
 		<AvatarModel output={direction} />

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { T } from '@threlte/core';
+	import { T, useThrelte } from '@threlte/core';
 	import { RigidBody, AutoColliders, Collider } from '@threlte/rapier';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
 	import { isElement } from '$lib/utils';
@@ -14,16 +14,19 @@
 	let rigidBody: RapierRigidBody;
 </script>
 
-<RigidBody type="fixed" bind:rigidBody userData={{ name: 'maze' }}>
-	<AutoColliders shape={'cuboid'} friction={2}>
-		{#each maze as element, ind}
-			<T.Mesh scale={element.dimension} receiveShadow position={element.position} key={ind}>
-				<T.BoxGeometry />
-				<T.MeshStandardMaterial color="lightseagreen" />
-			</T.Mesh>
-		{/each}
-	</AutoColliders>
-</RigidBody>
+<T.Group position={[0, 1, 0]}>
+	<RigidBody type="fixed" bind:rigidBody userData={{ name: 'maze' }} dominance={10}>
+		<AutoColliders shape={'cuboid'}>
+			{#each maze as element, ind}
+				<T.Mesh scale={element.dimension} receiveShadow castShadow position={element.position} key={ind}>
+					<T.BoxGeometry />
+					<T.MeshStandardMaterial color="lightseagreen" />
+				</T.Mesh>
+			{/each}
+		</AutoColliders>
+	</RigidBody>
+</T.Group>
+
 <T.Group position={entrance}>
 	<Collider
 		sensor

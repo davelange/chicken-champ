@@ -1,5 +1,5 @@
 export const debug = {
-	world: false,
-	axes: false,
+	world: true,
+	axes: true,
 	shadowLight: false
 };

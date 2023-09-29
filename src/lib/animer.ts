@@ -3,7 +3,7 @@ import { writable, type Writable } from 'svelte/store';
 import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
 import { ease, type Easing } from '$lib/easing';
 
-type Axes<T> = {
+export type Axes<T> = {
 	x: T;
 	y: T;
 	z: T;
@@ -92,11 +92,8 @@ export function animer() {
 
 		function stop() {
 			animerStore.update((st) => {
-				st.pool.forEach((item) => {
-					if (item.onEnd) item.onEnd();
-				});
 				st.pool = [];
-
+				st.inMotion = false;
 				return st;
 			});
 		}
