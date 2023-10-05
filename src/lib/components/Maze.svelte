@@ -18,9 +18,9 @@
 	<RigidBody type="fixed" bind:rigidBody userData={{ name: 'maze' }} dominance={10}>
 		<AutoColliders shape={'cuboid'}>
 			{#each maze as element, ind}
-				<T.Mesh castShadow scale={element.dimension} receiveShadow position={element.position} key={ind}>
+				<T.Mesh scale={element.dimension} receiveShadow position={element.position} key={ind}>
 					<T.BoxGeometry />
-					<T.MeshStandardMaterial color="lightseagreen" />
+					<T.MeshStandardMaterial flatShading color="lightseagreen" />
 				</T.Mesh>
 			{/each}
 		</AutoColliders>

@@ -1,9 +1,9 @@
-import type { Axes } from '$lib/animer';
 import { Easing } from '$lib/easing';
+import type { Axes } from '../../types';
 
 export const avatarConfigs = {
 	heavy: {
-		moveBy: 3.5,
+		moveBy: 4,
 		angularDamping: 3,
 		gravityScale: 4,
 		contactForceEventThreshold: 1,
@@ -12,19 +12,14 @@ export const avatarConfigs = {
 				name: 'walkXZ',
 				force,
 				duration: 40,
-				easing: { x: Easing.OutSine, z: Easing.OutSine }
+				easing: { x: Easing.OutCubic, z: Easing.OutCubic },
+				onEnd
 			},
 			{
 				name: 'walkY',
 				force: { y: 1.5 },
-				duration: 25,
-				easing: { y: Easing.OutCubic },
-				next: {
-					force: { y: -1.5 },
-					duration: 15,
-					easing: { y: Easing.OutBounce },
-					onEnd
-				}
+				duration: 15,
+				easing: { y: Easing.OutCubic }
 			}
 		]
 	},
@@ -38,20 +33,29 @@ export const avatarConfigs = {
 				name: 'walkXZ',
 				force,
 				duration: 28,
-				easing: { x: Easing.OutSine, z: Easing.OutSine }
+				easing: { x: Easing.OutSine, z: Easing.OutSine },
+				onEnd
 			},
 			{
 				name: 'walkY',
 				force: { y: 1.5 },
 				duration: 12,
-				easing: { y: Easing.OutCubic },
-				next: {
-					force: { y: -1.5 },
-					duration: 14,
-					easing: { y: Easing.OutCubic },
-					onEnd
-				}
+				easing: { y: Easing.OutCirc }
 			}
 		]
 	}
 };
+
+export const resetMotion = ({ onEnd }: { onEnd: () => void }) => [
+	{
+		force: { y: 10 },
+		duration: 40,
+		easing: { y: Easing.OutQuint },
+		next: {
+			force: { y: -10 },
+			duration: 60,
+			easing: { y: Easing.OutCubic },
+			onEnd
+		}
+	}
+];

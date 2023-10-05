@@ -6,12 +6,17 @@
 	import { onMount } from 'svelte';
 	import type { OrthographicCamera } from 'three';
 	import { degToRad } from 'three/src/math/MathUtils';
+	import type { Triplet } from '../../types';
 
 	export let maze: Structure[];
 
 	let camera: OrthographicCamera;
 	let buffer = 10;
 	let maxZoom = 10;
+	let view: Record<string, Triplet> = {
+		ortho: [5, 5.5, 5],
+		vertical: [0, 5.5, 0]
+	};
 
 	function zoomToFit(edge: number) {
 		const newZoom = camera.right / (edge + camera.position.x + camera.position.y + buffer);
@@ -30,7 +35,7 @@
 <T.OrthographicCamera
 	bind:ref={camera}
 	makeDefault
-	position={[5, 5.5, 5]}
+	position={debug.verticalView ? view.vertical : view.ortho}
 	fov={100}
 	near={-2000}
 	zoom={1}

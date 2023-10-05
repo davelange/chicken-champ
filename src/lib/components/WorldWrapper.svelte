@@ -25,7 +25,7 @@
 
 	let { maze, entrance, exit } = new MazeBuilder(8, 8).getElements();
 
-	$: avatarStartPoint = [entrance[0] - 10, entrance[1], entrance[2]] as Triplet;
+	$: avatarStartPoint = [entrance[0] - 8, entrance[1], entrance[2]] as Triplet;
 </script>
 
 <World>
