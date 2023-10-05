@@ -29,7 +29,7 @@
 </script>
 
 <World>
-	<OrthoCamera />
+	<OrthoCamera {maze} />
 	<Lights />
 
 	<Avatar initialPosition={avatarStartPoint} />
