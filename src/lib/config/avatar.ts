@@ -12,19 +12,14 @@ export const avatarConfigs = {
 				name: 'walkXZ',
 				force,
 				duration: 40,
-				easing: { x: Easing.OutSine, z: Easing.OutSine }
+				easing: { x: Easing.OutCubic, z: Easing.OutCubic },
+				onEnd
 			},
 			{
 				name: 'walkY',
 				force: { y: 1.5 },
-				duration: 25,
-				easing: { y: Easing.OutCubic },
-				next: {
-					force: { y: -1.5 },
-					duration: 15,
-					easing: { y: Easing.OutBounce },
-					onEnd
-				}
+				duration: 15,
+				easing: { y: Easing.OutCubic }
 			}
 		]
 	},
@@ -38,19 +33,14 @@ export const avatarConfigs = {
 				name: 'walkXZ',
 				force,
 				duration: 28,
-				easing: { x: Easing.OutSine, z: Easing.OutSine }
+				easing: { x: Easing.OutSine, z: Easing.OutSine },
+				onEnd
 			},
 			{
 				name: 'walkY',
 				force: { y: 1.5 },
 				duration: 12,
-				easing: { y: Easing.OutCubic },
-				next: {
-					force: { y: -1.5 },
-					duration: 14,
-					easing: { y: Easing.OutCubic },
-					onEnd
-				}
+				easing: { y: Easing.OutCirc }
 			}
 		]
 	}

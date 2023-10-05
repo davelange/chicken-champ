@@ -1,6 +1,6 @@
 export const debug = {
-	world: false,
-	axes: false,
-	orbitControls: false,
+	world: true,
+	axes: true,
+	orbitControls: true,
 	shadowLight: false
 };
