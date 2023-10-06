@@ -1,5 +1,5 @@
 import { Quaternion } from '@dimforge/rapier3d-compat';
-import type { Axes } from '../types';
+import type { Axes, Orientation } from '../types';
 
 export function deepRound(n: number) {
 	return Math.round(n * 1000000) / 1000000;
@@ -15,6 +15,14 @@ export const quaternion = {
 	zNeg: new Quaternion(0, 0.707, 0, 0.707),
 	zPos: new Quaternion(0, -0.707, 0, 0.707)
 };
+
+export function getAdjustedRotation(currentRot: Quaternion, target: Orientation) {
+	const base = quaternion[target];
+	base.x = currentRot.x;
+	base.z = currentRot.z;
+
+	return base;
+}
 
 export function checkOrientation(
 	data: Axes<number>,

@@ -7,3 +7,5 @@ export type Axes<T> = {
 	y: T;
 	z: T;
 };
+
+export type Orientation = 'xPos' | 'xNeg' | 'zNeg' | 'zPos';

@@ -7,32 +7,34 @@ export const avatarConfigs = {
 		angularDamping: 3,
 		gravityScale: 4,
 		contactForceEventThreshold: 1,
+		restitution: 0.1,
 		walkMotion: (force: Partial<Axes<number>>, onEnd: () => void) => [
 			{
 				name: 'walkXZ',
 				force,
-				duration: 40,
+				duration: 30,
 				easing: { x: Easing.OutCubic, z: Easing.OutCubic },
 				onEnd
 			},
 			{
 				name: 'walkY',
 				force: { y: 1.5 },
-				duration: 15,
+				duration: 20,
 				easing: { y: Easing.OutCubic }
 			}
 		]
 	},
 	light: {
-		moveBy: 4.5,
-		angularDamping: 0.5,
+		moveBy: 4,
+		angularDamping: 1,
 		gravityScale: 4,
+		restitution: 0.3,
 		contactForceEventThreshold: 1,
 		walkMotion: (force: Partial<Axes<number>>, onEnd: () => void) => [
 			{
 				name: 'walkXZ',
 				force,
-				duration: 28,
+				duration: 20,
 				easing: { x: Easing.OutSine, z: Easing.OutSine },
 				onEnd
 			},
@@ -52,8 +54,8 @@ export const resetMotion = ({ onEnd }: { onEnd: () => void }) => [
 		duration: 40,
 		easing: { y: Easing.OutQuint },
 		next: {
-			force: { y: -10 },
-			duration: 60,
+			force: { y: -9 },
+			duration: 40,
 			easing: { y: Easing.OutCubic },
 			onEnd
 		}

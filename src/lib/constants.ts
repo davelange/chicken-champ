@@ -1,7 +1,7 @@
 export const debug = {
-	world: true,
-	axes: true,
-	orbitControls: true,
+	world: false,
+	axes: false,
+	orbitControls: false,
 	shadowLight: false,
 	floorGrid: false,
 	verticalView: false

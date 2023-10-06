@@ -12,7 +12,7 @@
 		castShadow
 		geometry={$gltf.nodes.Object_4.geometry}
 		material={$gltf.materials.Material}
-		scale={[0.73, 1.2, 0.73]}
+		scale={[0.73, 1.4, 0.73]}
 		position={[0.4, -0.9, 0]}
 		rotation={[0, rotationY, 0]}
 	/>

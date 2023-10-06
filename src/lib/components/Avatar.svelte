@@ -2,17 +2,17 @@
 	import { T, useThrelte } from '@threlte/core';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
 	import { Collider, RigidBody } from '@threlte/rapier';
-	import { Vector3 } from 'three';
+	import { Vector3, Quaternion } from 'three';
 	import AvatarModel from './AvatarModel.svelte';
 	import { keyq, type KeyQueue } from '$lib/keyq';
 	import { animer } from '$lib/animer';
 	import type { Axes, Triplet } from '../../types';
 	import { avatarTracker } from '$lib/avatarTracker';
 	import { onMount } from 'svelte';
-	import { checkOrientation, isElement, quaternion } from '$lib/utils';
+	import { checkOrientation, getAdjustedRotation, isElement } from '$lib/utils';
 	import { avatarConfigs, resetMotion } from '$lib/config/avatar';
 
-	export let initialPosition = [0, 10, 0] satisfies Triplet;
+	export let initialPosition: Triplet;
 
 	let config = avatarConfigs.heavy;
 
@@ -35,30 +35,32 @@
 	}
 
 	function updateRotation(force: Axes<number>) {
+		const currentRot = rigidBody.rotation();
+
 		// D
 		if (checkOrientation(force, 'x', 'pos')) {
-			rigidBody.setRotation(quaternion.xPos, true);
+			rigidBody.setRotation(getAdjustedRotation(currentRot, 'xPos'), true);
 
 			return;
 		}
 
 		// W
 		if (checkOrientation(force, 'x', 'neg')) {
-			rigidBody.setRotation(quaternion.xNeg, true);
+			rigidBody.setRotation(getAdjustedRotation(currentRot, 'xNeg'), true);
 
 			return;
 		}
 
 		// A
 		if (checkOrientation(force, 'z', 'neg')) {
-			rigidBody.setRotation(quaternion.zNeg, true);
+			rigidBody.setRotation(getAdjustedRotation(currentRot, 'zNeg'), true);
 
 			return;
 		}
 
 		// Z
 		if (checkOrientation(force, 'z', 'pos')) {
-			rigidBody.setRotation(quaternion.zPos, true);
+			rigidBody.setRotation(getAdjustedRotation(currentRot, 'zPos'), true);
 
 			return;
 		}
@@ -96,9 +98,15 @@
 
 	async function handleKey(map: KeyQueue['map']) {
 		if (map.r && fallen) {
-			rigidBody.setRotation(quaternion.xPos, true);
+			rigidBody.setRotation(new Quaternion(0, 0, 0), true);
 
-			anim.go(resetMotion({ onEnd: () => (fallen = false) }));
+			anim.go(
+				resetMotion({
+					onEnd: () => {
+						fallen = false;
+					}
+				})
+			);
 
 			return;
 		}
@@ -158,6 +166,7 @@
 		userData={{ name: 'avatar' }}
 		angularDamping={config.angularDamping}
 	>
+		<!-- Top of head sensor -->
 		<T.Group position={[0, 1.8, 0]}>
 			<Collider
 				sensor
@@ -172,7 +181,7 @@
 			shape="cuboid"
 			args={[1.5, 1.8, 1]}
 			contactForceEventThreshold={config.contactForceEventThreshold}
-			restitution={0}
+			restitution={config.restitution}
 			on:collisionenter={handleMainCollisionEnter}
 		/>
 
