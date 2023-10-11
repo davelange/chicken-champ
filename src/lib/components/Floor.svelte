@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { debug } from '$lib/constants';
+	import { configStore } from '$lib/config';
 	import { T } from '@threlte/core';
 	import { Grid } from '@threlte/extras';
 	import { AutoColliders, RigidBody } from '@threlte/rapier';
@@ -14,7 +14,7 @@
 	</AutoColliders>
 </RigidBody>
 
-{#if debug.floorGrid}
+{#if $configStore.floorGrid}
 	<Grid
 		infiniteGrid
 		position={[2, 0, 2]}

@@ -1,5 +1,6 @@
 <script>
 	import WorldWrapper from '$lib/components/WorldWrapper.svelte';
+	import Config from '$lib/components/ui/Config.svelte';
 	import { game } from '$lib/game';
 	import { Canvas } from '@threlte/core';
 
@@ -14,6 +15,7 @@
 	<Canvas>
 		<WorldWrapper />
 	</Canvas>
+	<Config />
 
 	<p class="status">
 		{statusText[$game.status]}

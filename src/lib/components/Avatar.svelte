@@ -11,10 +11,11 @@
 	import { onMount } from 'svelte';
 	import { checkOrientation, getAdjustedRotation, isElement } from '$lib/utils';
 	import { avatarConfigs, resetMotion } from '$lib/config/avatar';
+	import { configStore } from '$lib/config';
 
 	export let initialPosition: Triplet;
 
-	let config = avatarConfigs.heavy;
+	$: config = avatarConfigs[$configStore.avatarConfig];
 
 	let rigidBody: RapierRigidBody;
 	let fallen = false;
