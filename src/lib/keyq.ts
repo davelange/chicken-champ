@@ -1,15 +1,16 @@
 type PossibleKey = 'w' | 'a' | 's' | 'd' | 'Space' | 'r';
-type KeyMap = Partial<Record<PossibleKey, boolean>>;
-type Subscriber = (map: KeyMap) => void;
+export type KeyMap = Partial<Record<PossibleKey, boolean>>;
+export type KeyState = 'keyDown' | 'keyUp';
+type Subscriber = (map: KeyMap, state: KeyState) => void;
+
+const POLL_INTERVAL = 60;
 
 export type KeyQueue = {
 	subs: Subscriber[];
 	map: KeyMap;
-	lockMap: KeyMap;
 	pending: boolean;
-	interval: number;
 
-	publish: () => void;
+	publish: (map: KeyMap, state: KeyState) => void;
 	subscribe: (fn: Subscriber) => void;
 	add: (key: PossibleKey) => void;
 	remove: (key: PossibleKey) => void;
@@ -20,12 +21,13 @@ export type KeyQueue = {
 };
 
 export const keyq: KeyQueue = {
-	interval: 50,
 	subs: [],
+	pending: false,
+	map: {},
 
-	publish() {
+	publish(map, keyState) {
 		this.subs.forEach((fn) => {
-			fn(this.map);
+			fn(map, keyState);
 		});
 	},
 
@@ -33,36 +35,29 @@ export const keyq: KeyQueue = {
 		this.subs.push(fn);
 	},
 
-	pending: false,
-	map: {},
-	lockMap: {},
-
 	add(key) {
-		if (this.lockMap[key]) {
-			return;
-		}
-
 		this.map[key] = true;
-		this.lockMap[key] = true;
 
 		if (!this.pending) {
 			setTimeout(() => {
 				this.pending = false;
-				this.publish();
-			}, 60);
+				this.publish(this.map, 'keyDown');
+			}, POLL_INTERVAL);
 
 			this.pending = true;
 		}
 	},
 
 	remove(key) {
+		const mapAtRelease = { ...this.map };
+
 		delete this.map[key];
-		delete this.lockMap[key];
 
 		if (!this.pending) {
 			setTimeout(() => {
 				this.pending = false;
-			}, 60);
+				this.publish(mapAtRelease, 'keyUp');
+			}, POLL_INTERVAL);
 
 			this.pending = true;
 		}

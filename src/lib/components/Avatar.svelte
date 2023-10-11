@@ -4,9 +4,9 @@
 	import { Collider, RigidBody } from '@threlte/rapier';
 	import { Vector3, Quaternion } from 'three';
 	import AvatarModel from './AvatarModel.svelte';
-	import { keyq, type KeyQueue } from '$lib/keyq';
+	import { keyq, type KeyMap, type KeyState } from '$lib/keyq';
 	import { animer } from '$lib/animer';
-	import type { Axes, Triplet } from '../../types';
+	import type { AvatarPhysicalState, Axes, Triplet } from '../../types';
 	import { avatarTracker } from '$lib/avatarTracker';
 	import { onMount } from 'svelte';
 	import { checkOrientation, getAdjustedRotation, isElement } from '$lib/utils';
@@ -20,6 +20,8 @@
 	let rigidBody: RapierRigidBody;
 	let fallen = false;
 	let qdKeystroke: Axes<number> | undefined = undefined;
+	let physicalState: AvatarPhysicalState = 'idle';
+
 	let anim = animer();
 
 	let { scene } = useThrelte();
@@ -67,7 +69,7 @@
 		}
 	}
 
-	function getForceFromKey(map: KeyQueue['map']) {
+	function getForceFromKey(map: KeyMap) {
 		let direction = { x: 0, y: 0, z: 0 };
 
 		if (map.w) {
@@ -97,8 +99,8 @@
 		anim.go(motion);
 	}
 
-	async function handleKey(map: KeyQueue['map']) {
-		if (map.r && fallen) {
+	async function handleKey(map: KeyMap, state: KeyState) {
+		if (map.r && fallen && state === 'keyDown') {
 			rigidBody.setRotation(new Quaternion(0, 0, 0), true);
 
 			anim.go(
@@ -112,13 +114,17 @@
 			return;
 		}
 
-		if ((!map.w && !map.a && !map.s && !map.d) || !rigidBody || !$avatarTracker) {
+		if ((!map.w && !map.a && !map.s && !map.d) || !rigidBody || !$avatarTracker || fallen) {
 			return;
 		}
 
-		if (fallen) {
+		if (state === 'keyDown') {
+			physicalState = 'crouch';
+
 			return;
 		}
+
+		physicalState = 'idle';
 
 		if ($anim.inMotion) {
 			// Queue max of 1 move to be played when current motion ends
@@ -186,6 +192,6 @@
 			on:collisionenter={handleMainCollisionEnter}
 		/>
 
-		<AvatarModel />
+		<AvatarModel {physicalState} />
 	</RigidBody>
 </T.Group>

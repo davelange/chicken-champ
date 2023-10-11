@@ -9,3 +9,5 @@ export type Axes<T> = {
 };
 
 export type Orientation = 'xPos' | 'xNeg' | 'zNeg' | 'zPos';
+
+export type AvatarPhysicalState = 'crouch' | 'idle';

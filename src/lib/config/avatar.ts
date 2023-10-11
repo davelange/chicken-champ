@@ -26,7 +26,7 @@ export const avatarConfigs = {
 	},
 	light: {
 		moveBy: 4,
-		angularDamping: 1,
+		angularDamping: 0.4,
 		gravityScale: 4,
 		restitution: 0.3,
 		contactForceEventThreshold: 1,
