@@ -1,4 +1,4 @@
-import { Quaternion } from '@dimforge/rapier3d-compat';
+import { Quaternion, Vector3, type Vector } from '@dimforge/rapier3d-compat';
 import type { Axes, Orientation } from '../types';
 
 export function deepRound(n: number) {
@@ -46,4 +46,26 @@ export function debounce(fn: (args: any) => void, delay: number) {
 		clearTimeout(timeout);
 		timeout = setTimeout(() => fn(args), delay);
 	};
+}
+
+export function snapToGrid(current: Vector, gridSize: number) {
+	function findClosestDivisible(val: number, offset: number, by: number) {
+		if (!Number.isInteger(val)) {
+			return findClosestDivisible(Math.floor(val), offset, by);
+		}
+		if ((val + offset) % by === 0) {
+			return val + offset;
+		}
+
+		if ((val - offset) % by === 0) {
+			return val - offset;
+		}
+
+		return findClosestDivisible(val, offset + 1, by);
+	}
+
+	const x = findClosestDivisible(current.x, 0, gridSize);
+	const z = findClosestDivisible(current.z, 0, gridSize);
+
+	return new Vector3(x, current.y, z);
 }

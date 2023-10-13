@@ -8,6 +8,7 @@ const POLL_INTERVAL = 60;
 export type KeyQueue = {
 	subs: Subscriber[];
 	map: KeyMap;
+	lockMap: KeyMap;
 	pending: boolean;
 
 	publish: (map: KeyMap, state: KeyState) => void;
@@ -24,6 +25,7 @@ export const keyq: KeyQueue = {
 	subs: [],
 	pending: false,
 	map: {},
+	lockMap: {},
 
 	publish(map, keyState) {
 		this.subs.forEach((fn) => {
@@ -36,7 +38,12 @@ export const keyq: KeyQueue = {
 	},
 
 	add(key) {
+		if (this.lockMap[key]) {
+			return;
+		}
+
 		this.map[key] = true;
+		this.lockMap[key] = true;
 
 		if (!this.pending) {
 			setTimeout(() => {
@@ -52,6 +59,7 @@ export const keyq: KeyQueue = {
 		const mapAtRelease = { ...this.map };
 
 		delete this.map[key];
+		delete this.lockMap[key];
 
 		if (!this.pending) {
 			setTimeout(() => {

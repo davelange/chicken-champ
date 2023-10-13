@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { T, useThrelte } from '@threlte/core';
-	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
+	import {
+		type RigidBody as RapierRigidBody,
+		Vector3 as RapierVector3
+	} from '@dimforge/rapier3d-compat';
 	import { Collider, RigidBody } from '@threlte/rapier';
 	import { Vector3, Quaternion } from 'three';
 	import AvatarModel from './AvatarModel.svelte';
@@ -9,7 +12,7 @@
 	import type { AvatarPhysicalState, Axes, Triplet } from '../../types';
 	import { avatarTracker } from '$lib/avatarTracker';
 	import { onMount } from 'svelte';
-	import { checkOrientation, getAdjustedRotation, isElement } from '$lib/utils';
+	import { checkOrientation, getAdjustedRotation, isElement, snapToGrid } from '$lib/utils';
 	import { avatarConfigs, resetMotion } from '$lib/config/avatar';
 	import { configStore } from '$lib/config';
 
@@ -21,6 +24,7 @@
 	let fallen = false;
 	let qdKeystroke: Axes<number> | undefined = undefined;
 	let physicalState: AvatarPhysicalState = 'idle';
+	let lastSafePosition = new RapierVector3(...initialPosition);
 
 	let anim = animer();
 
@@ -101,7 +105,9 @@
 
 	async function handleKey(map: KeyMap, state: KeyState) {
 		if (map.r && fallen && state === 'keyDown') {
+			const closest = snapToGrid(lastSafePosition, 4);
 			rigidBody.setRotation(new Quaternion(0, 0, 0), true);
+			rigidBody.setTranslation(closest, true);
 
 			anim.go(
 				resetMotion({
@@ -147,6 +153,9 @@
 	}) {
 		if (isElement(targetRigidBody, 'maze')) {
 			anim.stop();
+		}
+		if (isElement(targetRigidBody, 'floor') && !fallen) {
+			lastSafePosition = rigidBody.worldCom();
 		}
 	}
 
