@@ -27,7 +27,6 @@
 	}
 
 	const debouncedZoomToFit = debounce(() => {
-		console.log('resize');
 		zoomToFit(Math.abs(maze[0].position[0]));
 	}, 500);
 

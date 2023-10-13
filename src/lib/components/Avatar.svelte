@@ -12,8 +12,14 @@
 	import type { AvatarPhysicalState, Axes, Triplet } from '../../types';
 	import { avatarTracker } from '$lib/avatarTracker';
 	import { onMount } from 'svelte';
-	import { checkOrientation, getAdjustedRotation, isElement, snapToGrid } from '$lib/utils';
-	import { avatarConfigs, resetMotion } from '$lib/config/avatar';
+	import {
+		anyExceeds,
+		checkOrientation,
+		getAdjustedRotation,
+		isElement,
+		snapToGrid
+	} from '$lib/utils';
+	import { FALL_THRESHOLD, avatarConfigs, resetMotion } from '$lib/config/avatar';
 	import { configStore } from '$lib/config';
 
 	export let initialPosition: Triplet;
@@ -157,15 +163,10 @@
 		if (isElement(targetRigidBody, 'floor') && !fallen) {
 			lastSafePosition = rigidBody.worldCom();
 		}
-	}
 
-	// detect when heads touches floor (means avatar fell over)
-	function handleHeadCollisionEnter({
-		targetRigidBody
-	}: {
-		targetRigidBody: RapierRigidBody | null;
-	}) {
-		if (isElement(targetRigidBody, 'floor')) {
+		const { x, z } = rigidBody.rotation();
+
+		if (anyExceeds([x, z], FALL_THRESHOLD)) {
 			fallen = true;
 		}
 	}
@@ -182,16 +183,6 @@
 		userData={{ name: 'avatar' }}
 		angularDamping={config.angularDamping}
 	>
-		<!-- Top of head sensor -->
-		<T.Group position={[0, 1.8, 0]}>
-			<Collider
-				sensor
-				shape="cuboid"
-				args={[1.5, 0.2, 1]}
-				on:sensorenter={handleHeadCollisionEnter}
-			/>
-		</T.Group>
-
 		<Collider
 			mass={1}
 			shape="cuboid"
@@ -200,7 +191,6 @@
 			restitution={config.restitution}
 			on:collisionenter={handleMainCollisionEnter}
 		/>
-
 		<AvatarModel {physicalState} />
 	</RigidBody>
 </T.Group>

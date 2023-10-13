@@ -69,3 +69,12 @@ export function snapToGrid(current: Vector, gridSize: number) {
 
 	return new Vector3(x, current.y, z);
 }
+
+export function roundTo(number: number, decimalPlaces: number): number {
+	const multiplier = Math.pow(10, decimalPlaces);
+	return Math.round(number * multiplier) / multiplier;
+}
+
+export function anyExceeds(values: number[], limit: number) {
+	return values.some((val) => Math.abs(val) > limit);
+}

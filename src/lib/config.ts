@@ -7,5 +7,5 @@ export const configStore = writable({
 	shadowLight: false,
 	floorGrid: false,
 	verticalView: false,
-	avatarConfig: 'heavy' as 'heavy' | 'light'
+	avatarConfig: 'light' as 'heavy' | 'light'
 });
