@@ -7,20 +7,24 @@
 	import Lights from './Lights.svelte';
 	import Floor from './Floor.svelte';
 	import Avatar from './Avatar.svelte';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { keyq } from '$lib/keyq';
 	import { T } from '@threlte/core';
 	import { MazeBuilder } from '$lib/maze-generator';
 	import Maze from './Maze.svelte';
 	import { configStore } from '$lib/config';
+	import { swipe } from '$lib/swipe';
 
 	interactivity();
 
 	onMount(() => {
 		keyq.init();
-	});
-	onDestroy(() => {
-		keyq.destroy();
+		swipe.init();
+
+		return () => {
+			keyq.destroy();
+			swipe.destroy();
+		};
 	});
 
 	let { maze, entrance, exit } = new MazeBuilder(8, 8).getElements();

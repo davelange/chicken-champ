@@ -78,3 +78,11 @@ export function roundTo(number: number, decimalPlaces: number): number {
 export function anyExceeds(values: number[], limit: number) {
 	return values.some((val) => Math.abs(val) > limit);
 }
+
+export function notNeg(value: number) {
+	return value >= 0;
+}
+
+export function neg(value: number) {
+	return value < 0;
+}

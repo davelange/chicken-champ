@@ -5,90 +5,81 @@ type Subscriber = (map: KeyMap, state: KeyState) => void;
 
 const POLL_INTERVAL = 60;
 
-export type KeyQueue = {
+type KeyQState = {
 	subs: Subscriber[];
 	map: KeyMap;
 	lockMap: KeyMap;
 	pending: boolean;
-
-	publish: (map: KeyMap, state: KeyState) => void;
-	subscribe: (fn: Subscriber) => void;
-	add: (key: PossibleKey) => void;
-	remove: (key: PossibleKey) => void;
-	handleKeyDown: (event: KeyboardEvent) => void;
-	handleKeyUp: (event: KeyboardEvent) => void;
-	init: () => void;
-	destroy: () => void;
 };
 
-export const keyq: KeyQueue = {
+const state: KeyQState = {
 	subs: [],
 	pending: false,
 	map: {},
-	lockMap: {},
-
-	publish(map, keyState) {
-		this.subs.forEach((fn) => {
-			fn(map, keyState);
-		});
-	},
-
-	subscribe(fn) {
-		this.subs.push(fn);
-	},
-
-	add(key) {
-		if (this.lockMap[key]) {
-			return;
-		}
-
-		this.map[key] = true;
-		this.lockMap[key] = true;
-
-		if (!this.pending) {
-			setTimeout(() => {
-				this.pending = false;
-				this.publish(this.map, 'keyDown');
-			}, POLL_INTERVAL);
-
-			this.pending = true;
-		}
-	},
-
-	remove(key) {
-		const mapAtRelease = { ...this.map };
-
-		delete this.map[key];
-		delete this.lockMap[key];
-
-		if (!this.pending) {
-			setTimeout(() => {
-				this.pending = false;
-				this.publish(mapAtRelease, 'keyUp');
-			}, POLL_INTERVAL);
-
-			this.pending = true;
-		}
-	},
-
-	handleKeyDown(event: KeyboardEvent) {
-		keyq.add(getKeyId(event));
-	},
-
-	handleKeyUp(event: KeyboardEvent) {
-		keyq.remove(getKeyId(event));
-	},
-
-	init() {
-		document.addEventListener('keydown', this.handleKeyDown);
-		document.addEventListener('keyup', this.handleKeyUp);
-	},
-
-	destroy() {
-		document.removeEventListener('keydown', this.handleKeyUp);
-		document.removeEventListener('keyup', this.handleKeyUp);
-	}
+	lockMap: {}
 };
+
+function publish(map: KeyMap, keyState: KeyState) {
+	state.subs.forEach((fn) => {
+		fn(map, keyState);
+	});
+}
+
+function subscribe(fn: Subscriber) {
+	state.subs.push(fn);
+}
+
+function add(key: PossibleKey) {
+	if (state.lockMap[key]) {
+		return;
+	}
+
+	state.map[key] = true;
+	state.lockMap[key] = true;
+
+	if (!state.pending) {
+		setTimeout(() => {
+			state.pending = false;
+			publish(state.map, 'keyDown');
+		}, POLL_INTERVAL);
+
+		state.pending = true;
+	}
+}
+
+function remove(key: PossibleKey) {
+	const mapAtRelease = { ...state.map };
+
+	delete state.map[key];
+	delete state.lockMap[key];
+
+	if (!state.pending) {
+		setTimeout(() => {
+			state.pending = false;
+			publish(mapAtRelease, 'keyUp');
+		}, POLL_INTERVAL);
+
+		state.pending = true;
+	}
+}
+
+function handleKeyDown(event: KeyboardEvent) {
+	add(getKeyId(event));
+}
+
+function handleKeyUp(event: KeyboardEvent) {
+	remove(getKeyId(event));
+}
+
+function init() {
+	document.addEventListener('keydown', handleKeyDown);
+	document.addEventListener('keyup', handleKeyUp);
+}
+
+function destroy() {
+	document.removeEventListener('keydown', handleKeyUp);
+	document.removeEventListener('keyup', handleKeyUp);
+}
 
 function getKeyId(event: KeyboardEvent): PossibleKey {
 	if (event.code === 'Space') {
@@ -97,3 +88,9 @@ function getKeyId(event: KeyboardEvent): PossibleKey {
 
 	return event.key as PossibleKey;
 }
+
+export const keyq = {
+	init,
+	destroy,
+	subscribe
+};

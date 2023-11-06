@@ -21,6 +21,7 @@
 	} from '$lib/utils';
 	import { FALL_THRESHOLD, avatarConfigs, resetMotion } from '$lib/config/avatar';
 	import { configStore } from '$lib/config';
+	import { swipe } from '$lib/swipe';
 
 	export let initialPosition: Triplet;
 
@@ -172,6 +173,9 @@
 	}
 
 	keyq.subscribe(handleKey);
+	swipe.subscribe((data) => {
+		handleKey(data, 'keyUp');
+	});
 </script>
 
 <T.Group position={initialPosition}>
