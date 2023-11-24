@@ -14,40 +14,42 @@
 	let rigidBody: RapierRigidBody;
 </script>
 
-<T.Group position={[0, 1.2, 0]}>
+<T.Group position={[-24, 1, -24]}>
 	<RigidBody type="fixed" bind:rigidBody userData={{ name: 'maze' }} dominance={10}>
 		<AutoColliders shape={'cuboid'}>
 			{#each maze as element, ind}
-				<T.Mesh scale={element.dimension} receiveShadow position={element.position} key={ind}>
+				<T.Mesh scale={element.dimension} position={element.position} key={ind} castShadow>
 					<T.BoxGeometry />
-					<T.MeshStandardMaterial flatShading color="lightseagreen" />
+					<T.MeshStandardMaterial color={'lightseagreen'}  flatShading/>
 				</T.Mesh>
 			{/each}
 		</AutoColliders>
 	</RigidBody>
-</T.Group>
 
-<T.Group position={entrance}>
-	<Collider
-		sensor
-		shape="cuboid"
-		args={[0.1, 3, 3]}
-		on:sensorenter={(data) => {
-			if (isElement(data.targetRigidBody, 'avatar') && $game.status === 'idle') {
-				$game.status = 'inMaze';
-			}
-		}}
-	/>
-</T.Group>
-<T.Group position={exit}>
-	<Collider
-		sensor
-		shape="cuboid"
-		args={[0.1, 3, 3]}
-		on:sensorenter={(data) => {
-			if (isElement(data.targetRigidBody, 'avatar') && $game.status === 'inMaze') {
-				$game.status = 'outMaze';
-			}
-		}}
-	/>
+	<T.Group position={entrance}>
+		<Collider
+			sensor
+			shape="cuboid"
+			args={[0.1, 3, 3]}
+			on:sensorenter={(data) => {
+				if (isElement(data.targetRigidBody, 'avatar') && $game.status === 'idle') {
+					$game.status = 'inMaze';
+				}
+			}}
+		/>
+	</T.Group>
+	<T.Group position={exit}>
+		<Collider
+			sensor
+			shape="cuboid"
+			args={[0.1, 3, 3]}
+			on:sensorenter={(data) => {
+				if (isElement(data.targetRigidBody, 'avatar') && $game.status === 'inMaze') {
+					$game.status = 'outMaze';
+				}
+			}}
+		/>
+	</T.Group>
+
+	<slot />
 </T.Group>
