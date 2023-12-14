@@ -1,5 +1,5 @@
 <script>
-	import WorldWrapper from '$lib/components/WorldWrapper.svelte';
+	import Scene from '$lib/components/Scene.svelte';
 	import Config from '$lib/components/ui/Config.svelte';
 	import { game } from '$lib/game';
 	import { Canvas } from '@threlte/core';
@@ -13,7 +13,7 @@
 
 <div>
 	<Canvas>
-		<WorldWrapper />
+		<Scene />
 	</Canvas>
 	<Config />
 

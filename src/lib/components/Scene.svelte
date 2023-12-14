@@ -2,7 +2,6 @@
 	import type { Triplet } from '../../types';
 	import { Debug, World } from '@threlte/rapier';
 	import { interactivity } from '@threlte/extras';
-
 	import OrthoCamera from './OrthoCamera.svelte';
 	import Lights from './Lights.svelte';
 	import Floor from './Floor.svelte';
@@ -30,7 +29,7 @@
 	$: avatarStartPoint = [entrance[0] - 8, entrance[1], entrance[2]] as Triplet;
 </script>
 
-´<World>
+<World>
 	<OrthoCamera {maze} />
 	<Lights />
 

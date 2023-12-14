@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { Structure } from '$lib/maze-generator';
 	import { T } from '@threlte/core';
 	import { OrbitControls } from '@threlte/extras';
 	import { onMount } from 'svelte';
@@ -9,7 +8,7 @@
 	import { configStore } from '$lib/config';
 	import { debounce } from '$lib/utils';
 
-	export let maze: Structure[];
+	export let maze: any;
 
 	let camera: OrthographicCamera;
 	let buffer = 10;
@@ -32,6 +31,8 @@
 
 	onMount(() => {
 		window.addEventListener('resize', debouncedZoomToFit);
+
+		return () => window.removeEventListener('resize', debouncedZoomToFit);
 	});
 
 	// force update when view type changes

@@ -285,23 +285,24 @@
     svelte-hmr "^0.15.3"
     vitefu "^0.2.4"
 
-"@threlte/core@^6.0.8":
-  version "6.0.8"
-  resolved "https://registry.yarnpkg.com/@threlte/core/-/core-6.0.8.tgz#94976ca8312bb51b8253f23870b6bdac1718b1ee"
-  integrity sha512-NhTc7rn+SGHa+Sz97Q580IFqT2vhPu39cvt6P0gXtLc6icAdNMMdftDPSEnr2LyK2IT3GCcgfKzAZSVTS2IfKA==
-
-"@threlte/extras@^5.6.3":
-  version "5.6.3"
-  resolved "https://registry.yarnpkg.com/@threlte/extras/-/extras-5.6.3.tgz#33391aa4fed8f4b0bd89b43011c196b369f67772"
-  integrity sha512-vjCaNt8d31EoV8Q297R48rGTVCGKi/E2c8zTATgp4keiYrw2KmqCYgre7BEnQF7WRy8tpG8ldKt5AydYmuu2fA==
+"@threlte/core@^7.0.10":
+  version "7.0.10"
+  resolved "https://registry.yarnpkg.com/@threlte/core/-/core-7.0.10.tgz#26f0880617bfd907156dba45c4beba3a600127d8"
+  integrity sha512-KV/+KRya2quUer3Jb1QGyWfYtS23P96j584mnzNxDiTNKOUU4g5MnEBeS2zHaIg3J8cNXQK6IcJYd7PD7Irybw==
   dependencies:
-    lodash-es "^4.17.21"
+    mitt "^3.0.1"
+
+"@threlte/extras@^8.0.8":
+  version "8.0.8"
+  resolved "https://registry.yarnpkg.com/@threlte/extras/-/extras-8.0.8.tgz#ad1163ebbdfa277fe396242487790d36f412765f"
+  integrity sha512-eFWSuOP02JgZLybgZxc9CShLQcXykYIfibnAuETBz7exOpx7wEx2kbxsoF87NCN7ZoGTMAP7HnWn1XftfQ28bQ==
+  dependencies:
     troika-three-text "^0.47.2"
 
-"@threlte/rapier@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@threlte/rapier/-/rapier-1.1.2.tgz#c9ef892c1f992eb7dc4456266c1d312f476e0b66"
-  integrity sha512-2a9o1WkOex+inQGSRjp+gL6C01fsV6Njlyr9ug6UQdOt5FGVmjYR0Cz2aRMege/ZgKHX/bE8RLndvT6+/y4etA==
+"@threlte/rapier@^1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@threlte/rapier/-/rapier-1.1.4.tgz#d50c0559002d5497c1d916746a837b341b7f57e2"
+  integrity sha512-O9GWlmiL7nngf6JBPKp1d79/emm4mWd44tWSeerjq8XtD4RRFY0qyQ0pls19vidq/EsyzVeZ82V9t7bpaHfVJQ==
 
 "@types/cookie@^0.5.1":
   version "0.5.2"
@@ -333,10 +334,10 @@
   resolved "https://registry.yarnpkg.com/@types/stats.js/-/stats.js-0.17.0.tgz#0ed81d48e03b590c24da85540c1d952077a9fe20"
   integrity sha512-9w+a7bR8PeB0dCT/HBULU2fMqf6BAzvKbxFboYhmDtDkKPiyXYbjoe2auwsXlEFI7CFNMF1dCv3dFH5Poy9R1w==
 
-"@types/three@^0.156.0":
-  version "0.156.0"
-  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.156.0.tgz#cd49f2a12e858400962ea818d1e1c45e638141a8"
-  integrity sha512-733bXDSRdlrxqOmQuOmfC1UBRuJ2pREPk8sWnx9MtIJEVDQMx8U0NQO5MVVaOrjzDPyLI+cFPim2X/ss9v0+LQ==
+"@types/three@^0.158.3":
+  version "0.158.3"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.158.3.tgz#f53e26c50709c7f972934e4e8c1ca51add0cfa9f"
+  integrity sha512-6Qs1rUvLSbkJ4hlIe6/rdwIf61j1x2UKvGJg7s8KjswYsz1C1qDTs6voVXXB8kYaI0hgklgZgbZUupfL1l9xdA==
   dependencies:
     "@types/stats.js" "*"
     "@types/webxr" "*"
@@ -1126,11 +1127,6 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
-lodash-es@^4.17.21:
-  version "4.17.21"
-  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
-  integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
-
 lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
@@ -1201,6 +1197,11 @@ minimist@^1.2.0, minimist@^1.2.6:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
+
+mitt@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/mitt/-/mitt-3.0.1.tgz#ea36cf0cc30403601ae074c8f77b7092cdab36d1"
+  integrity sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==
 
 mkdirp@^0.5.1:
   version "0.5.6"
@@ -1594,10 +1595,10 @@ text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==
 
-three@^0.156.1:
-  version "0.156.1"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.156.1.tgz#bab4fec121a5b3975eb4f4d227d9c912171eb399"
-  integrity sha512-kP7H0FK9d/k6t/XvQ9FO6i+QrePoDcNhwl0I02+wmUJRNSLCUIDMcfObnzQvxb37/0Uc9TDT0T1HgsRRrO6SYQ==
+three@^0.158.0:
+  version "0.158.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.158.0.tgz#03ddd5b60ce9c31be8fb69f27a6d9efd49908ac3"
+  integrity sha512-TALj4EOpdDPF1henk2Q+s17K61uEAAWQ7TJB68nr7FKxqwyDr3msOt5IWdbGm4TaWKjrtWS8DJJWe9JnvsWOhQ==
 
 tiny-glob@^0.2.9:
   version "0.2.9"
