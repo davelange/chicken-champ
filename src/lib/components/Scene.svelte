@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { Triplet } from '../../types';
 	import { Debug, World } from '@threlte/rapier';
 	import { interactivity } from '@threlte/extras';
 	import OrthoCamera from './OrthoCamera.svelte';

@@ -3,13 +3,11 @@
 	import { RigidBody, AutoColliders, Collider } from '@threlte/rapier';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
 	import { isElement } from '$lib/utils';
-	import type { Triplet } from '../../types';
-	import type { Structure } from '$lib/maze-generator';
 	import { game } from '$lib/game';
 
 	export let entrance: Triplet;
 	export let exit: Triplet;
-	export let maze: Structure[];
+	export let maze: MazeBlock[];
 
 	let rigidBody: RapierRigidBody;
 </script>

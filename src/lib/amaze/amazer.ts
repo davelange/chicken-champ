@@ -1,6 +1,5 @@
 // Adapted from https://github.com/codebox/maze.js
 
-import type { Triplet } from '../../types';
 import { AxisGroup } from './axisGroup';
 import type { buildBaseGrid } from './baseGrid';
 import {

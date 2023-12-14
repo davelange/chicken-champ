@@ -1,13 +1,5 @@
-import type { Triplet } from '../../types';
-
-type Block = {
-	position: Triplet;
-	dimension: Triplet;
-	color?: string;
-};
-
 type Line = {
-	items: Block[];
+	items: MazeBlock[];
 	offset: number;
 };
 
@@ -65,7 +57,7 @@ export class AxisGroup {
 		);
 	}
 
-	addBlock(block: Block, lastLine = false) {
+	addBlock(block: MazeBlock, lastLine = false) {
 		if (lastLine) {
 			this.lines[this.lines.length - 1].items.push(block);
 		} else {

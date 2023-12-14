@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
 	import { useGltf } from '@threlte/extras';
-	import type { AvatarPhysicalState } from '../../types';
 	import type { Mesh } from 'three';
 
 	export let physicalState: AvatarPhysicalState;

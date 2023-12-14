@@ -2,7 +2,6 @@ import { useTask } from '@threlte/core';
 import { writable, type Writable } from 'svelte/store';
 import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
 import { ease, type Easing } from '$lib/easing';
-import type { Axes } from '../types';
 
 type AnimationOptions = {
 	force: Partial<Axes<number>>;

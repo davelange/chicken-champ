@@ -1,5 +1,4 @@
 import { Quaternion, Vector3, type Vector } from '@dimforge/rapier3d-compat';
-import type { Axes, Orientation } from '../types';
 
 export function deepRound(n: number) {
 	return Math.round(n * 1000000) / 1000000;

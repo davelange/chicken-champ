@@ -4,7 +4,6 @@
 	import { onMount } from 'svelte';
 	import type { OrthographicCamera } from 'three';
 	import { degToRad } from 'three/src/math/MathUtils';
-	import type { Triplet } from '../../types';
 	import { configStore } from '$lib/config';
 	import { debounce } from '$lib/utils';
 

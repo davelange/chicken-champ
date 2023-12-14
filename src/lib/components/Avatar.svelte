@@ -9,7 +9,6 @@
 	import AvatarModel from './AvatarModel.svelte';
 	import { keyq, type KeyMap, type KeyState } from '$lib/keyq';
 	import { animer } from '$lib/animer';
-	import type { AvatarPhysicalState, Axes, Triplet } from '../../types';
 	import { avatarTracker } from '$lib/avatarTracker';
 	import { onMount } from 'svelte';
 	import {
