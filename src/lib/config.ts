@@ -6,6 +6,5 @@ export const configStore = writable({
 	orbitControls: true,
 	shadowLight: false,
 	floorGrid: false,
-	verticalView: false,
-	avatarConfig: 'light' as 'heavy' | 'light'
+	verticalView: false
 });

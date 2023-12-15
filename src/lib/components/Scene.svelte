@@ -25,7 +25,7 @@
 		};
 	});
 
-	$: avatarStartPoint = [entrance[0] - 8, entrance[1], entrance[2]] as Triplet;
+	$: avatarStartPoint = [entrance[0] - 8, entrance[1], entrance[2]] as Triplet
 </script>
 
 <World>

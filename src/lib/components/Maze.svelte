@@ -18,7 +18,7 @@
 			{#each maze as element, ind}
 				<T.Mesh scale={element.dimension} position={element.position} key={ind} castShadow>
 					<T.BoxGeometry />
-					<T.MeshStandardMaterial color={'lightseagreen'}  flatShading/>
+					<T.MeshStandardMaterial color={'lightseagreen'} flatShading />
 				</T.Mesh>
 			{/each}
 		</AutoColliders>
@@ -30,8 +30,8 @@
 			shape="cuboid"
 			args={[0.1, 3, 3]}
 			on:sensorenter={(data) => {
-				if (isElement(data.targetRigidBody, 'avatar') && $game.status === 'idle') {
-					$game.status = 'inMaze';
+				if (isElement(data.targetRigidBody, 'avatar') && $game.gameState === 'idle') {
+					$game.gameState = 'inMaze';
 				}
 			}}
 		/>
@@ -42,8 +42,8 @@
 			shape="cuboid"
 			args={[0.1, 3, 3]}
 			on:sensorenter={(data) => {
-				if (isElement(data.targetRigidBody, 'avatar') && $game.status === 'inMaze') {
-					$game.status = 'outMaze';
+				if (isElement(data.targetRigidBody, 'avatar') && $game.gameState === 'inMaze') {
+					$game.gameState = 'done';
 				}
 			}}
 		/>

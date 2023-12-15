@@ -41,13 +41,6 @@
 				<input type="checkbox" bind:checked={$configStore.shadowLight} />
 				Show shadow light guide
 			</label>
-			<label>
-				Avatar type
-				<select name="avatar-type" bind:value={$configStore.avatarConfig}>
-					<option value="light">Light and shaky</option>
-					<option value="heavy">Heavy and steady</option>
-				</select>
-			</label>
 		</form>
 	{/if}
 </div>

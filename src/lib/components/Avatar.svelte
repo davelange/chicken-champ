@@ -19,12 +19,12 @@
 		snapToGrid
 	} from '$lib/utils';
 	import { FALL_THRESHOLD, avatarConfigs, resetMotion } from '$lib/config/avatar';
-	import { configStore } from '$lib/config';
 	import { swipe } from '$lib/swipe';
+	import { game } from '$lib/game';
 
 	export let initialPosition: Triplet;
 
-	$: config = avatarConfigs[$configStore.avatarConfig];
+	$: config = avatarConfigs[$game.avatarType];
 
 	let rigidBody: RapierRigidBody;
 	let fallen = false;
