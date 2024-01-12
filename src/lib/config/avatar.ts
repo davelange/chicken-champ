@@ -1,5 +1,4 @@
 import { Easing } from '$lib/easing';
-import type { Axes } from '../../types';
 
 export const FALL_THRESHOLD = 0.3;
 export const avatarConfigs = {

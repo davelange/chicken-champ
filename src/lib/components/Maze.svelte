@@ -2,8 +2,7 @@
 	import { T } from '@threlte/core';
 	import { RigidBody, AutoColliders, Collider } from '@threlte/rapier';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
-	import { isElement } from '$lib/utils';
-	import { game } from '$lib/game';
+	import {  handleMazeEnter, handleMazeExit } from '$lib/game';
 
 	export let entrance: Triplet;
 	export let exit: Triplet;
@@ -29,11 +28,7 @@
 			sensor
 			shape="cuboid"
 			args={[0.1, 3, 3]}
-			on:sensorenter={(data) => {
-				if (isElement(data.targetRigidBody, 'avatar') && $game.gameState === 'idle') {
-					$game.gameState = 'inMaze';
-				}
-			}}
+			on:sensorenter={handleMazeEnter}
 		/>
 	</T.Group>
 	<T.Group position={exit}>
@@ -41,11 +36,7 @@
 			sensor
 			shape="cuboid"
 			args={[0.1, 3, 3]}
-			on:sensorenter={(data) => {
-				if (isElement(data.targetRigidBody, 'avatar') && $game.gameState === 'inMaze') {
-					$game.gameState = 'done';
-				}
-			}}
+			on:sensorenter={handleMazeExit}
 		/>
 	</T.Group>
 
