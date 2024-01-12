@@ -104,7 +104,7 @@ export function buildBaseGrid(config) {
 	};
 }
 
-export function buildRandom(seed = Date.now()) {
+export function buildRandom(seed) {
 	// https://stackoverflow.com/a/47593316/138256
 	function mulberry32() {
 		let t = (seed += 0x6d2b79f5);

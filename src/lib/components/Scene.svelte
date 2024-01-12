@@ -11,9 +11,17 @@
 	import Maze from './Maze.svelte';
 	import { configStore } from '$lib/config';
 	import { swipe } from '$lib/swipe';
-	import { maze, entrance, exit } from '$lib/amaze';
+	import { createMaze } from '$lib/amaze';
+	import { game } from '$lib/game';
 
 	interactivity();
+
+	const { entrance, exit, maze } = createMaze({
+		width: 8,
+		height: 8,
+		sizeUnit: 4,
+		seed: $game.seed
+	});
 
 	onMount(() => {
 		keyq.init();
@@ -25,7 +33,7 @@
 		};
 	});
 
-	$: avatarStartPoint = [entrance[0] - 8, entrance[1], entrance[2]] as Triplet
+	$: avatarStartPoint = [entrance[0] - 8, entrance[1], entrance[2]] as Triplet;
 </script>
 
 <World>

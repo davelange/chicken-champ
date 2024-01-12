@@ -6,6 +6,10 @@
 	{#if $game.appState === 'inGame'}
 		<p>Using {$game.avatarType === 'heavy' ? 'Heavy and steady' : 'Light and shaky'}</p>
 	{/if}
+
+	{#if $game.seed}
+		<p>Maze seed: {$game.seed}</p>
+	{/if}
 </div>
 
 <style>

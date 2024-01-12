@@ -190,5 +190,7 @@ export function generateMeshData(inputGrid: MazeGrid, unit: number) {
 		}
 	});
 
-	return { maze: [...rows.getOutput(), ...cols.getOutput()], entrance: entrance, exit };
+	const flatMaze = [...rows.getOutput(), ...cols.getOutput()];
+
+	return { maze: flatMaze, entrance: entrance, exit };
 }
