@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { game } from '$lib/game';
-	import Timer from '$lib/components/Timer.svelte'
+	import Timer from '$lib/components/Timer.svelte';
 </script>
 
 <div class="root">
@@ -13,10 +13,12 @@
 	{/if}
 	<Timer />
 </div>
+
 <style>
 	.root {
 		position: absolute;
 		left: 1rem;
 		top: 1rem;
+		color: black;
 	}
 </style>

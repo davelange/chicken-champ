@@ -1,3 +1,4 @@
+/** @type { import("eslint").Linter.FlatConfig } */
 module.exports = {
 	root: true,
 	extends: [
@@ -13,6 +14,9 @@ module.exports = {
 		ecmaVersion: 2020,
 		extraFileExtensions: ['.svelte']
 	},
+	rules: {
+		'@typescript-eslint/no-explicit-any': 'warn'
+	},
 	env: {
 		browser: true,
 		es2017: true,
@@ -22,13 +26,9 @@ module.exports = {
 		{
 			files: ['*.svelte'],
 			parser: 'svelte-eslint-parser',
-			project: 'tsconfig.json',
 			parserOptions: {
 				parser: '@typescript-eslint/parser'
 			}
 		}
-	],
-	rules: {
-		'@typescript-eslint/no-explicit-any': 'off'
-	}
+	]
 };

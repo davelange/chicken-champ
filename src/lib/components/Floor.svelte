@@ -9,7 +9,7 @@
 	<AutoColliders shape={'cuboid'}>
 		<T.Mesh position={[0, -0.5, 0]} receiveShadow frustumCulled={false}>
 			<T.BoxGeometry args={[3000, 0.2, 3000]} />
-			<T.MeshStandardMaterial color="#eee" />
+			<T.MeshStandardMaterial color="#d4d4d8" />
 		</T.Mesh>
 	</AutoColliders>
 </RigidBody>
