@@ -11,7 +11,11 @@
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="root" on:keyup={handleKeyUp}>
+<div
+	class="root"
+	on:keyup={handleKeyUp}
+	style="color: {$configStore.mazeColor}; background: {$configStore.floorColor}"
+>
 	<button type="button" class="toggle-btn" on:click={() => (open = !open)}>
 		{open ? 'Close' : 'Settings'}
 	</button>
@@ -41,6 +45,14 @@
 				<input type="checkbox" bind:checked={$configStore.shadowLight} />
 				Show shadow light guide
 			</label>
+			<label>
+				<input type="color" bind:value={$configStore.mazeColor} />
+				Maze color
+			</label>
+			<label>
+				<input type="color" bind:value={$configStore.floorColor} />
+				Floor color
+			</label>
 		</form>
 	{/if}
 </div>
@@ -49,9 +61,10 @@
 	.root {
 		position: absolute;
 		top: 2rem;
-		left: 2rem;
+		right: 2rem;
 		max-width: 300px;
 		border-radius: 0.5rem;
+		z-index: 2;
 	}
 	.toggle-btn {
 		background: none;
@@ -65,7 +78,6 @@
 		flex-direction: column;
 		gap: 0.5rem;
 		padding: 1rem;
-		background-color: #ffffff77;
 	}
 	label {
 		display: block;

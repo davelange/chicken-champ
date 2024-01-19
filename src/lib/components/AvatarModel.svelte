@@ -18,7 +18,7 @@
 </script>
 
 {#if $gltf}
-	<T.Group scale={[1, yScale, 1]} position={[0, -1.7, 0]}>
+	<T.Group scale={[1, yScale, 1]} position={[0, -1.85, 0]}>
 		<T.Mesh
 			ref={mesh}
 			castShadow

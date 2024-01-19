@@ -34,5 +34,5 @@
 {#if $configStore.shadowLight}
 	<T is={helperCamera} />
 {/if}
-<T.DirectionalLight position={[-3, 20, -10]} intensity={0.7} />
-<T.AmbientLight intensity={0.2} />
+<T.DirectionalLight position={[-3, 20, -10]} intensity={1} />
+<T.AmbientLight intensity={0.5} />
