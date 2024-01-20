@@ -22,6 +22,7 @@ module.exports = {
 		es2017: true,
 		node: true
 	},
+	project: 'tsconfig.json',
 	overrides: [
 		{
 			files: ['*.svelte'],

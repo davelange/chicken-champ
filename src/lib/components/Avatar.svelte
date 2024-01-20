@@ -110,7 +110,7 @@
 	}
 
 	async function handleKey(map: KeyMap, state: KeyState) {
-		if (map.r && fallen && state === 'keyDown') {
+		if (map.r && state === 'keyDown') {
 			const closest = snapToGrid(lastSafePosition, 4);
 			rigidBody.setRotation(new Quaternion(0, 0, 0), true);
 			rigidBody.setTranslation(closest, true);
