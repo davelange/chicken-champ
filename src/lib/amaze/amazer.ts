@@ -1,6 +1,5 @@
 // Adapted from https://github.com/codebox/maze.js
 
-import { AxisGroup } from './axisGroup';
 import type { buildBaseGrid } from './baseGrid';
 import {
 	DIRECTION_EAST,
@@ -34,20 +33,13 @@ export function generateMeshData(inputGrid: MazeGrid, unit: number) {
 	const grid = findHorizontalExits(inputGrid);
 	const sideCount = Math.sqrt(grid.cellCount);
 
-	const rows = new AxisGroup({
-		count: sideCount,
-		unit,
-		unitOffset: 2,
-		axis: 'x'
-	});
-	const cols = new AxisGroup({
-		count: sideCount,
-		unit,
-		unitOffset: 2,
-		axis: 'z'
-	});
 	let entrance: Triplet = [0, 0, 0];
 	let exit: Triplet = [0, 0, 0];
+
+	const blocks: MazeBlock[] = [];
+	const unitOffset = unit / 2;
+	let colIdx = 0;
+	let rowIdx = 0;
 
 	grid.forEachCell((cell: any) => {
 		const northNeighbour = cell.neighbours[DIRECTION_NORTH];
@@ -57,19 +49,11 @@ export function generateMeshData(inputGrid: MazeGrid, unit: number) {
 		const exitDirection = cell.metadata[METADATA_START_CELL] || cell.metadata[METADATA_END_CELL];
 
 		if (exitDirection === DIRECTION_WEST) {
-			entrance = [
-				cols.index * cols.unitOffset * cols.unit - cols.unit,
-				0,
-				rows.index * rows.unitOffset * rows.unit - rows.unit
-			];
+			entrance = [colIdx * unitOffset * unit - unit, 0, rowIdx * unitOffset * unit - unit];
 		}
 
 		if (exitDirection === DIRECTION_EAST) {
-			exit = [
-				cols.index * cols.unitOffset * cols.unit + cols.unit,
-				0,
-				rows.index * rows.unitOffset * rows.unit - rows.unit
-			];
+			exit = [colIdx * unitOffset * unit + unit, 0, rowIdx * unitOffset * unit - unit];
 		}
 
 		/* Check if it has NORTH neighbour */
@@ -77,84 +61,41 @@ export function generateMeshData(inputGrid: MazeGrid, unit: number) {
 			(!northNeighbour || !cell.isLinkedTo(northNeighbour)) &&
 			!(exitDirection === DIRECTION_NORTH)
 		) {
-			const positionToSet = cols.index * cols.unitOffset * cols.unit;
-
-			if (rows.nextBlockIsContiguous(positionToSet)) {
-				rows.onLastBlock({
-					dimensionChange: rows.unit * 2,
-					positionChange: rows.unit
-				});
-			} else {
-				rows.addBlock({
-					dimension: [rows.unit * rows.unitOffset, 3, rows.unit],
-					position: [
-						cols.index * cols.unitOffset * cols.unit,
-						0,
-						rows.index * rows.unitOffset * rows.unit - rows.unit * rows.unitOffset
-					],
-					color: 'red'
-				});
-			}
+			blocks.push({
+				dimension: [unit * unitOffset, 3, unit],
+				position: [
+					colIdx * unitOffset * unit - unit / 2,
+					0,
+					rowIdx * unitOffset * unit - unit * unitOffset
+				],
+				color: 'red'
+			});
 		}
 
 		/* Check if it has SOUTH neighbour */
 		if (
 			(!southNeighbour || !cell.isLinkedTo(southNeighbour)) &&
 			!(exitDirection === DIRECTION_SOUTH) &&
-			rows.index === sideCount - 1
+			rowIdx === sideCount - 1
 		) {
-			const positionToSet = cols.index * cols.unitOffset * cols.unit;
-
-			if (rows.nextBlockIsContiguous(positionToSet, true)) {
-				rows.onLastBlock({
-					dimensionChange: rows.unit * 2,
-					positionChange: rows.unit,
-					lastLine: true
-				});
-			} else {
-				rows.addBlock(
-					{
-						dimension: [rows.unit * rows.unitOffset, 3, rows.unit],
-						position: [
-							cols.index * cols.unitOffset * cols.unit,
-							0,
-							rows.index * rows.unitOffset * rows.unit
-						],
-						color: 'yellow'
-					},
-					true
-				);
-			}
+			blocks.push({
+				dimension: [unit * unitOffset, 3, unit],
+				position: [colIdx * unitOffset * unit - unit / 2, 0, rowIdx * unitOffset * unit],
+				color: 'yellow'
+			});
 		}
 
 		/* Check if it has EAST neighbour */
 		if (
 			(!eastNeighbour || !cell.isLinkedTo(eastNeighbour)) &&
 			!(exitDirection === DIRECTION_EAST) &&
-			cols.index === sideCount - 1
+			colIdx === sideCount - 1
 		) {
-			const positionToSet = rows.index * rows.unitOffset * rows.unit;
-
-			if (cols.nextBlockIsContiguous(positionToSet, true)) {
-				cols.onLastBlock({
-					dimensionChange: cols.unit * 2,
-					positionChange: cols.unit,
-					lastLine: true
-				});
-			} else {
-				cols.addBlock(
-					{
-						dimension: [cols.unit, 3, cols.unit * 3],
-						position: [
-							cols.index * cols.unitOffset * cols.unit + cols.unit,
-							0,
-							rows.index * rows.unitOffset * rows.unit - rows.unit
-						],
-						color: 'lightseagreen'
-					},
-					true
-				);
-			}
+			blocks.push({
+				dimension: [unit, 3, unit * 3],
+				position: [colIdx * unitOffset * unit + unit, 0, rowIdx * unitOffset * unit - unit],
+				color: 'lightseagreen'
+			});
 		}
 
 		/* Check if it has WEST neighbour */
@@ -162,35 +103,20 @@ export function generateMeshData(inputGrid: MazeGrid, unit: number) {
 			(!westNeighbour || !cell.isLinkedTo(westNeighbour)) &&
 			!(exitDirection === DIRECTION_WEST)
 		) {
-			const positionToSet = rows.index * rows.unitOffset * rows.unit;
-
-			if (cols.nextBlockIsContiguous(positionToSet)) {
-				cols.onLastBlock({
-					dimensionChange: cols.unit * 2,
-					positionChange: cols.unit
-				});
-			} else {
-				cols.addBlock({
-					dimension: [cols.unit, 3, cols.unit * 3],
-					position: [
-						cols.index * cols.unitOffset * cols.unit - cols.unit,
-						0,
-						rows.index * rows.unitOffset * rows.unit - rows.unit
-					],
-					color: 'blue'
-				});
-			}
+			blocks.push({
+				dimension: [unit, 3, unit * 3],
+				position: [colIdx * unitOffset * unit - unit, 0, rowIdx * unitOffset * unit - unit],
+				color: 'blue'
+			});
 		}
 
-		if (rows.index === sideCount - 1) {
-			rows.index = 0;
-			cols.index++;
+		if (rowIdx === sideCount - 1) {
+			rowIdx = 0;
+			colIdx++;
 		} else {
-			rows.index++;
+			rowIdx++;
 		}
 	});
 
-	const flatMaze = [...rows.getOutput(), ...cols.getOutput()];
-
-	return { maze: flatMaze, entrance: entrance, exit };
+	return { maze: blocks, entrance: entrance, exit };
 }

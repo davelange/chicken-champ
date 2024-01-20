@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { game } from '$lib/game';
+	import { gameStore } from '$lib/game';
 
 	let startTime: Date = new Date();
 	let interval: ReturnType<typeof setInterval>;
@@ -18,9 +18,9 @@
 		timeStr = `${minsStr}:${secondsStr}:${millisecondsStr}`;
 	}
 
-	game.subscribe((state) => {
-		if (state.gameState === 'inMaze') {
-			startTime = new Date($game.entryTime);
+	gameStore.subscribe((state) => {
+		if (state.inMaze) {
+			startTime = new Date($gameStore.entryTime);
 			interval = setInterval(getTimeDiffDesc, 100);
 		} else if (state.gameState === 'done') {
 			clearInterval(interval);

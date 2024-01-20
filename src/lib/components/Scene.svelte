@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Debug, World } from '@threlte/rapier';
-	import { interactivity } from '@threlte/extras';
+	import { interactivity, transitions } from '@threlte/extras';
 	import OrthoCamera from './OrthoCamera.svelte';
 	import Lights from './Lights.svelte';
 	import Floor from './Floor.svelte';
@@ -9,23 +9,25 @@
 	import { keyq } from '$lib/keyq';
 	import { T } from '@threlte/core';
 	import Maze from './Maze.svelte';
-	import { configStore } from '$lib/config';
+	import { configStore, initConfig } from '$lib/config';
 	import { swipe } from '$lib/swipe';
 	import { createMaze } from '$lib/amaze';
-	import { game } from '$lib/game';
+	import { gameStore } from '$lib/game';
 
 	interactivity();
+	transitions();
 
 	const { entrance, exit, maze } = createMaze({
 		width: 8,
 		height: 8,
 		sizeUnit: 4,
-		seed: $game.seed
+		seed: $gameStore.seed
 	});
 
 	onMount(() => {
 		keyq.init();
 		swipe.init();
+		initConfig();
 
 		return () => {
 			keyq.destroy();
@@ -45,7 +47,7 @@
 	</Maze>
 	<Floor />
 	{#if $configStore.worldDebug}
-		<Debug />
+		<Debug color="red" />
 	{/if}
 	{#if $configStore.axes}
 		<T.AxesHelper scale={10} />

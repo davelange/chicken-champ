@@ -1,9 +1,6 @@
 <script lang="ts">
 	import '../app.css';
 	import Info from '$lib/components/ui/Info.svelte';
-	import { initGame } from '$lib/game';
-
-	initGame();
 </script>
 
 <svelte:head>

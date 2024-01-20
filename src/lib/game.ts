@@ -1,75 +1,72 @@
-import { page } from '$app/stores';
 import { writable } from 'svelte/store';
 import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
-import { isElement } from './utils';
-import type { Collider } from '@threlte/rapier';
+import { getFromUrl, isElement } from './utils';
+import { goto } from '$app/navigation';
 
-export const game = writable<{
-	appState: 'avatarSelect' | 'inGame';
-	gameState: 'idle' | 'inMaze' | 'done';
+type WritableStore = {
+	gameState: 'idle' | 'inProgress' | 'done';
+	inMaze: boolean;
 	avatarType: 'light' | 'heavy';
-	seed: number | undefined;
-	entryTime: number
-	exitTime: number
-}>({
-	appState: 'avatarSelect',
-	gameState: 'idle',
-	avatarType: 'light',
-	seed: undefined,
-	entryTime: 0,
-	exitTime: 0,
-});
+	seed: string | undefined;
+	entryTime: number;
+	exitTime: number;
+};
 
-function setGameState(url: URL) {
-	if (url.pathname === '/maze') {
-		game.update((st) => ({ ...st, appState: 'inGame' }));
-	}
-}
-
-function setFromUrl(url: URL, key: string) {
-	const value = url.searchParams.get(key);
-
-	if (value) {
-		game.update((st) => ({ ...st, [key]: value }));
-	}
-}
-
-export function handleMazeEnter({targetRigidBody}: {targetRigidBody: RapierRigidBody | null}) {
-	if(!targetRigidBody || !isElement(targetRigidBody, 'avatar')) {
-		return
-	}
-
-	
-	game.update(store => {
-		if(store.gameState === 'idle') {
-			store.gameState = 'inMaze'
-			store.entryTime = Date.now()
-		}
-
-		return store
-	})
-}
-
-export function handleMazeExit({targetRigidBody}: {targetRigidBody: RapierRigidBody | null}) {
-	if(!targetRigidBody || !isElement(targetRigidBody, 'avatar')) {
-		return
-	}
-
-	
-	game.update(store => {
-		if(store.gameState === 'inMaze') {
-			store.gameState = 'done'
-			store.exitTime = Date.now()
-		}
-
-		return store
-	})
-}
-
-export function initGame() {
-	page.subscribe(({ url }) => {
-		setFromUrl(url, 'avatarType');
-		setFromUrl(url, 'seed');
-		setGameState(url);
+function createGameStore() {
+	const store = writable<WritableStore>({
+		gameState: 'idle',
+		inMaze: false,
+		avatarType: 'light',
+		seed: undefined,
+		entryTime: 0,
+		exitTime: 0
 	});
+	let ref: WritableStore;
+	store.subscribe((val) => (ref = val));
+
+	function _set(args: Partial<WritableStore>) {
+		store.update((st) => ({
+			...st,
+			...args
+		}));
+	}
+
+	function init() {
+		const config = getFromUrl(['avatarType', 'seed'], new URL(location.href));
+
+		if ((config.avatarType !== 'heavy' && config.avatarType !== 'light') || !config.seed) {
+			return goto('/');
+		}
+
+		_set(config);
+	}
+
+	function onMazeEnter({ targetRigidBody }: { targetRigidBody: RapierRigidBody | null }) {
+		if (!targetRigidBody || !isElement(targetRigidBody, 'avatar')) {
+			return;
+		}
+
+		_set({ inMaze: true, entryTime: Date.now() });
+	}
+
+	function onMazeExit({ targetRigidBody }: { targetRigidBody: RapierRigidBody | null }) {
+		if (!targetRigidBody || !isElement(targetRigidBody, 'avatar')) {
+			return;
+		}
+
+		if (ref.inMaze) {
+			_set({ gameState: 'done', exitTime: Date.now() });
+		}
+	}
+
+	return {
+		subscribe: store.subscribe,
+		onMazeEnter,
+		onMazeExit,
+		init
+	};
 }
+
+const gameStore = createGameStore();
+
+export { gameStore };

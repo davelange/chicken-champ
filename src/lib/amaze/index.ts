@@ -1,15 +1,15 @@
 import { generateMeshData } from './amazer';
 import { buildMazeModel, buildRandom } from './baseGrid';
 
-function sanitizeSeed(seed = "") {
-	const containsNumbersOnly = !seed.match(/\D/g)
-	const withinLimits = Math.abs(Number(seed)) < Number.MAX_SAFE_INTEGER
+function sanitizeSeed(seed = '') {
+	const containsNumbersOnly = !seed.match(/\D/g);
+	const withinLimits = Math.abs(Number(seed)) < Number.MAX_SAFE_INTEGER;
 
-	if(withinLimits && containsNumbersOnly) {
-		return Number(seed)
+	if (withinLimits && containsNumbersOnly) {
+		return Number(seed);
 	}
 
-	return Date.now()
+	return Date.now();
 }
 
 export function createMaze({
@@ -23,7 +23,7 @@ export function createMaze({
 	seed?: string;
 	sizeUnit: number;
 }) {
-	const mazeSeed = sanitizeSeed(seed)
+	const mazeSeed = sanitizeSeed(seed);
 
 	const mazeModel = buildMazeModel({
 		width,

@@ -20,11 +20,11 @@
 	} from '$lib/utils';
 	import { FALL_THRESHOLD, avatarConfigs, resetMotion } from '$lib/config/avatar';
 	import { swipe } from '$lib/swipe';
-	import { game } from '$lib/game';
+	import { gameStore } from '$lib/game';
 
 	export let initialPosition: Triplet;
 
-	$: config = avatarConfigs[$game.avatarType];
+	$: config = avatarConfigs[$gameStore.avatarType];
 
 	let rigidBody: RapierRigidBody;
 	let fallen = false;

@@ -1,4 +1,15 @@
 import { Quaternion, Vector3, type Vector } from '@dimforge/rapier3d-compat';
+import type { Color } from 'three';
+
+export function getFromUrl(keys: string[], url: URL) {
+	return keys.reduce(
+		(memo, key) => ({
+			...memo,
+			[key]: url.searchParams.get(key) || ''
+		}),
+		{} as Record<string, string>
+	);
+}
 
 export function deepRound(n: number) {
 	return Math.round(n * 1000000) / 1000000;
@@ -84,4 +95,45 @@ export function notNeg(value: number) {
 
 export function neg(value: number) {
 	return value < 0;
+}
+
+export function randInRange(min: number, max: number) {
+	return Math.random() * (max - min) + min;
+}
+
+function hexToRgb(hex: string): number[] {
+	// Convert hex to RGB
+	const bigint = parseInt(hex.slice(1), 16);
+	const r = (bigint >> 16) & 255;
+	const g = (bigint >> 8) & 255;
+	const b = bigint & 255;
+	return [r, g, b];
+}
+
+// Source: ChatGPT
+export function interpolateColor(
+	startColor: string,
+	endColor: string
+): (progress: number) => Color {
+	const startColorRGB = hexToRgb(startColor);
+	const endColorRGB = hexToRgb(endColor);
+
+	return (progress: number) => {
+		const interpolatedColor = startColorRGB.map((startValue, i) =>
+			Math.round(startValue + (endColorRGB[i] - startValue) * progress)
+		);
+
+		const output =
+			'#' +
+			(
+				(1 << 24) +
+				(interpolatedColor[0] << 16) +
+				(interpolatedColor[1] << 8) +
+				interpolatedColor[2]
+			)
+				.toString(16)
+				.slice(1);
+
+		return output as unknown as Color;
+	};
 }
