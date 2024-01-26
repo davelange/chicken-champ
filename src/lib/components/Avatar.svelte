@@ -110,6 +110,10 @@
 	}
 
 	async function handleKey(map: KeyMap, state: KeyState) {
+		if (!$gameStore.moveAllowed) {
+			return;
+		}
+
 		if (map.r && state === 'keyDown') {
 			const closest = snapToGrid(lastSafePosition, 4);
 			rigidBody.setRotation(new Quaternion(0, 0, 0), true);

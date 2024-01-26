@@ -6,6 +6,7 @@ import { goto } from '$app/navigation';
 type WritableStore = {
 	gameState: 'idle' | 'inProgress' | 'done';
 	inMaze: boolean;
+	moveAllowed: boolean;
 	avatarType: 'light' | 'heavy';
 	seed: string | undefined;
 	entryTime: number;
@@ -16,6 +17,7 @@ function createGameStore() {
 	const store = writable<WritableStore>({
 		gameState: 'idle',
 		inMaze: false,
+		moveAllowed: false,
 		avatarType: 'light',
 		seed: undefined,
 		entryTime: 0,
@@ -42,11 +44,11 @@ function createGameStore() {
 	}
 
 	function onMazeEnter({ targetRigidBody }: { targetRigidBody: RapierRigidBody | null }) {
-		if (!targetRigidBody || !isElement(targetRigidBody, 'avatar')) {
+		if (!targetRigidBody || !isElement(targetRigidBody, 'avatar') || ref.inMaze) {
 			return;
 		}
-
-		_set({ inMaze: true, entryTime: Date.now() });
+		console.log('enter!');
+		_set({ inMaze: true });
 	}
 
 	function onMazeExit({ targetRigidBody }: { targetRigidBody: RapierRigidBody | null }) {
@@ -59,10 +61,18 @@ function createGameStore() {
 		}
 	}
 
+	function onCountdownEnded() {
+		_set({ gameState: 'inProgress', entryTime: Date.now() });
+		setTimeout(() => {
+			_set({ moveAllowed: true });
+		}, 1000);
+	}
+
 	return {
-		subscribe: store.subscribe,
+		...store,
 		onMazeEnter,
 		onMazeExit,
+		onCountdownEnded,
 		init
 	};
 }

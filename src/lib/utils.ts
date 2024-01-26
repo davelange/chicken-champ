@@ -26,6 +26,8 @@ export const quaternion = {
 	zPos: new Quaternion(0, -0.707, 0, 0.707)
 };
 
+export const FULL_ROTATION = Math.PI * 2;
+
 export function getAdjustedRotation(currentRot: Quaternion, target: Orientation) {
 	const base = quaternion[target];
 	base.x = currentRot.x;

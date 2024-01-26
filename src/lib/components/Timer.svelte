@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { configStore } from '$lib/config';
 	import { gameStore } from '$lib/game';
 
 	let startTime: Date = new Date();
@@ -19,7 +20,7 @@
 	}
 
 	gameStore.subscribe((state) => {
-		if (state.inMaze) {
+		if (state.gameState === 'inProgress' && !interval) {
 			startTime = new Date($gameStore.entryTime);
 			interval = setInterval(getTimeDiffDesc, 100);
 		} else if (state.gameState === 'done') {
@@ -28,6 +29,9 @@
 	});
 </script>
 
-<p>
+<div
+	class="absolute top-4 left-4 z-10 text-white font-bold text-xl"
+	style="color: {$configStore.mazeColor}"
+>
 	{timeStr}
-</p>
+</div>

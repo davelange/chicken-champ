@@ -7,7 +7,7 @@ export const configStore = writable({
 	shadowLight: false,
 	floorGrid: false,
 	verticalView: false,
-	floorColor: '#262626',
+	floorColor: '#262626', //'#2d3839',
 	mazeColor: '#04a8b4'
 });
 

@@ -8,6 +8,7 @@
 	import { bounceInOut, circIn, quadIn } from 'svelte/easing';
 	import { interpolateColor, randInRange } from '$lib/utils';
 	import { gameStore } from '$lib/game';
+	import { ControlsDemo } from './ControlsDemo';
 
 	export let entrance: Triplet;
 	export let exit: Triplet;
@@ -45,28 +46,38 @@
 </script>
 
 <T.Group position={[-24, 1, -24]}>
-	<RigidBody type="fixed" bind:rigidBody userData={{ name: 'maze' }} dominance={10}>
-		<AutoColliders shape={'cuboid'}>
-			{#each maze as element, ind}
-				<T.Mesh
-					scale={element.dimension}
-					position={[element.position[0], 0, element.position[2]]}
-					key={ind}
-					transition={moveUpIn}
-				>
-					<T.BoxGeometry />
-					<T.MeshStandardMaterial transition={fadeIn} color={$configStore.floorColor} flatShading />
-				</T.Mesh>
-			{/each}
-		</AutoColliders>
-	</RigidBody>
+	{#if $gameStore.gameState !== 'idle'}
+		<RigidBody type="fixed" bind:rigidBody userData={{ name: 'maze' }} dominance={10}>
+			<AutoColliders shape={'cuboid'}>
+				{#each maze as element, ind}
+					<T.Mesh
+						scale={element.dimension}
+						position={[element.position[0], 0, element.position[2]]}
+						key={ind}
+						transition={moveUpIn}
+					>
+						<T.BoxGeometry />
+						<T.MeshStandardMaterial
+							transition={fadeIn}
+							color={$configStore.floorColor}
+							flatShading
+						/>
+					</T.Mesh>
+				{/each}
+			</AutoColliders>
+		</RigidBody>
 
-	<T.Group position={entrance}>
-		<Collider sensor shape="cuboid" args={[0.1, 3, 3]} on:sensorenter={gameStore.onMazeEnter} />
-	</T.Group>
-	<T.Group position={exit}>
-		<Collider sensor shape="cuboid" args={[0.1, 3, 3]} on:sensorenter={gameStore.onMazeExit} />
-	</T.Group>
+		<T.Group position={entrance}>
+			<Collider sensor shape="cuboid" args={[0.1, 3, 3]} on:sensorenter={gameStore.onMazeEnter} />
+		</T.Group>
+		<T.Group position={exit}>
+			<Collider sensor shape="cuboid" args={[0.1, 3, 3]} on:sensorenter={gameStore.onMazeExit} />
+		</T.Group>
+	{/if}
 
 	<slot />
 </T.Group>
+
+{#if $gameStore.gameState === 'idle'}
+	<ControlsDemo />
+{/if}
