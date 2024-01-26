@@ -3,30 +3,29 @@
 	import { OrbitControls } from '@threlte/extras';
 	import { onMount } from 'svelte';
 	import type { OrthographicCamera } from 'three';
-	import { degToRad } from 'three/src/math/MathUtils';
 	import { configStore } from '$lib/config';
 	import { debounce } from '$lib/utils';
+	import { degToRad } from 'three/src/math/MathUtils.js';
 
-	export let maze: any;
+	export let maze: MazeBlock[];
 
 	let camera: OrthographicCamera;
-	let buffer = 10;
 	let maxZoom = 10;
 	let view: Record<string, Triplet> = {
 		ortho: [5, 5.5, 5],
 		vertical: [0, 5.5, 0]
 	};
 
-	function zoomToFit(edge: number) {
-		const newZoom = camera.right / (edge + camera.position.x + camera.position.y + buffer);
+	let mazeEdge = Math.max(...maze.map((item) => item.position[0]));
+
+	function zoomToFit() {
+		const newZoom = camera.right / mazeEdge;
 
 		camera.zoom = Math.min(newZoom, maxZoom);
 		camera.updateProjectionMatrix();
 	}
 
-	const debouncedZoomToFit = debounce(() => {
-		zoomToFit(Math.abs(maze[0].position[0]));
-	}, 500);
+	const debouncedZoomToFit = debounce(zoomToFit, 500);
 
 	onMount(() => {
 		window.addEventListener('resize', debouncedZoomToFit);
@@ -53,7 +52,7 @@
 	zoom={1}
 	on:create={({ ref }) => {
 		ref.lookAt(0, 0, 0);
-		zoomToFit(Math.abs(maze[0].position[0]));
+		zoomToFit();
 	}}
 >
 	{#if $configStore.orbitControls}

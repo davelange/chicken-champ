@@ -7,12 +7,17 @@
 
 	let time = 5;
 	let timeout: ReturnType<typeof setTimeout>;
+	export let onEnd: () => void;
 
 	function runCountdown() {
-		if (time === 0) {
+		if (time === 1) {
 			gameStore.onCountdownEnded();
 			clearTimeout(timeout);
 			return;
+		}
+
+		if (time === 2) {
+			onEnd();
 		}
 
 		time -= 1;

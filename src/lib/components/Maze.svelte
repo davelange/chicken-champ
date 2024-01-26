@@ -5,7 +5,7 @@
 	import { configStore } from '$lib/config';
 	import { createTransition } from '@threlte/extras';
 	import type { Mesh, MeshStandardMaterial } from 'three';
-	import { bounceInOut, circIn, quadIn } from 'svelte/easing';
+	import { bounceInOut, quadIn } from 'svelte/easing';
 	import { interpolateColor, randInRange } from '$lib/utils';
 	import { gameStore } from '$lib/game';
 	import { ControlsDemo } from './ControlsDemo';
