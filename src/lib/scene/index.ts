@@ -1,0 +1,10 @@
+export { default as Avatar } from './Avatar.svelte';
+export { default as AvatarModel } from './AvatarModel.svelte';
+export { default as Countdown } from './Countdown.svelte';
+export { default as ControlsDemo } from './ControlsDemo.svelte';
+export { default as KeyText } from './KeyText.svelte';
+export { default as Floor } from './Floor.svelte';
+export { default as Lights } from './Lights.svelte';
+export { default as OrthoCamera } from './OrthoCamera.svelte';
+export { default as Maze } from './Maze.svelte';
+export { default as Scene } from './Scene.svelte';

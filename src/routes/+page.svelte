@@ -1,5 +1,5 @@
 <script lang="ts">
-	import IntroOptions from '$lib/components/ui/IntroOptions.svelte';
+	import { IntroOptions } from '$lib/components';
 </script>
 
 <main class="w-full flex h-full py-4">

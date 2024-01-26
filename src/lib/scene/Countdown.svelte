@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { configStore, initConfig } from '$lib/config';
+	import { configStore } from '$lib/config';
 	import { gameStore } from '$lib/game';
 	import { FULL_ROTATION } from '$lib/utils';
 	import { Text } from '@threlte/extras';

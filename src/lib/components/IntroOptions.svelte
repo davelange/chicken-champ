@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import AvatarRadioButton from '$lib/components/ui/AvatarRadioButton.svelte';
+	import { AvatarRadioButton } from '$lib/components';
 
 	let seedParam = $page.url.searchParams.get('seed');
 	let defaultSeed = seedParam || Date.now();

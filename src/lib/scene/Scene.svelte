@@ -1,18 +1,14 @@
 <script lang="ts">
 	import { Debug, World } from '@threlte/rapier';
 	import { interactivity, transitions } from '@threlte/extras';
-	import OrthoCamera from './OrthoCamera.svelte';
-	import Lights from './Lights.svelte';
-	import Floor from './Floor.svelte';
-	import Avatar from './Avatar.svelte';
 	import { onMount } from 'svelte';
 	import { keyq } from '$lib/keyq';
 	import { T } from '@threlte/core';
-	import Maze from './Maze.svelte';
 	import { configStore, initConfig } from '$lib/config';
 	import { swipe } from '$lib/swipe';
 	import { createMaze } from '$lib/amaze';
 	import { gameStore } from '$lib/game';
+	import { Avatar, Floor, Lights, OrthoCamera, Maze } from '$lib/scene';
 
 	interactivity();
 	transitions();

@@ -8,7 +8,7 @@
 	import { bounceInOut, quadIn } from 'svelte/easing';
 	import { interpolateColor, randInRange } from '$lib/utils';
 	import { gameStore } from '$lib/game';
-	import { ControlsDemo } from './ControlsDemo';
+	import { ControlsDemo } from '$lib/scene';
 
 	export let entrance: Triplet;
 	export let exit: Triplet;

@@ -2,9 +2,9 @@
 	import { configStore } from '$lib/config';
 	import { T, useTask } from '@threlte/core';
 	import { RoundedBoxGeometry, Text } from '@threlte/extras';
-	import KeyText from './KeyText.svelte';
+	import { KeyText } from '$lib/scene';
 	import { FULL_ROTATION } from '$lib/utils';
-	import Countdown from '../Countdown.svelte';
+	import Countdown from './Countdown.svelte';
 
 	const BTN_WIDTH = 7;
 	const BTN_HEIGHT = 2;

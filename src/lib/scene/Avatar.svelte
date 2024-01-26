@@ -6,7 +6,7 @@
 	} from '@dimforge/rapier3d-compat';
 	import { Collider, RigidBody } from '@threlte/rapier';
 	import { Vector3, Quaternion } from 'three';
-	import AvatarModel from './AvatarModel.svelte';
+	import { AvatarModel } from '$lib/scene';
 	import { keyq, type KeyMap, type KeyState } from '$lib/keyq';
 	import { animer } from '$lib/animer';
 	import { avatarTracker } from '$lib/avatarTracker';
