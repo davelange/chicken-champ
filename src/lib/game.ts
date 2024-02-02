@@ -47,7 +47,6 @@ function createGameStore() {
 		if (!targetRigidBody || !isElement(targetRigidBody, 'avatar') || ref.inMaze) {
 			return;
 		}
-		console.log('enter!');
 		_set({ inMaze: true });
 	}
 

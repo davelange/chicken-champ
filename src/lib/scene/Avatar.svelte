@@ -10,7 +10,7 @@
 	import { keyq, type KeyMap, type KeyState } from '$lib/keyq';
 	import { animer } from '$lib/animer';
 	import { avatarTracker } from '$lib/avatarTracker';
-	import { onMount } from 'svelte';
+	import { avatarStore } from '$lib/avatar';
 	import {
 		anyExceeds,
 		checkOrientation,
@@ -22,31 +22,33 @@
 	import { FALL_THRESHOLD, avatarConfigs } from '$lib/config/avatar';
 	import { swipe } from '$lib/swipe';
 	import { gameStore } from '$lib/game';
+	import { onMount } from 'svelte';
 
 	export let initialPosition: Triplet;
 
 	$: config = avatarConfigs[$gameStore.avatarType];
 
 	let rigidBody: RapierRigidBody;
-	let fallen = false;
 	let qdKeystroke: Axes<number> | undefined = undefined;
-	let physicalState: AvatarPhysicalState = 'idle';
-	let lastSafePosition = new RapierVector3(...initialPosition);
-
 	let anim = animer();
 
 	let { scene } = useThrelte();
 
-	onMount(() => {
-		scene.add($avatarTracker);
-		avatarTracker.update(new Vector3(...initialPosition));
-	});
-
 	$: if (rigidBody) {
+		// create animer
 		anim.create({
 			body: rigidBody
 		});
+
+		// init last safe position
+		$avatarStore.lastSafePosition = new RapierVector3(...initialPosition);
 	}
+
+	onMount(() => {
+		// setup shadow tracker
+		scene.add($avatarTracker);
+		avatarTracker.update(new Vector3(...initialPosition));
+	});
 
 	function updateRotation(force: Axes<number>) {
 		const currentRot = rigidBody.rotation();
@@ -103,14 +105,14 @@
 
 		// reset
 		if (key.r && state === 'keyDown') {
-			const closest = snapToGrid(lastSafePosition, 4);
+			const closest = snapToGrid($avatarStore.lastSafePosition, 4);
 			rigidBody.setRotation(new Quaternion(0, 0, 0), true);
 			rigidBody.setTranslation(closest, true);
 
 			anim.go(
 				config.getResetMotion({
 					onEnd: () => {
-						fallen = false;
+						$avatarStore.fallen = false;
 					}
 				})
 			);
@@ -118,17 +120,17 @@
 			return;
 		}
 
-		if ((!key.w && !key.a && !key.s && !key.d) || fallen) {
+		if ((!key.w && !key.a && !key.s && !key.d) || $avatarStore.fallen) {
 			return;
 		}
 
 		if (state === 'keyDown') {
-			physicalState = 'crouch';
+			$avatarStore.physicalState = 'crouch';
 
 			return;
 		}
 
-		physicalState = 'idle';
+		$avatarStore.physicalState = 'idle';
 
 		if ($anim.inMotion) {
 			// Queue max of 1 move to be played when current motion ends
@@ -151,14 +153,14 @@
 		if (isElement(targetRigidBody, 'maze')) {
 			anim.stop();
 		}
-		if (isElement(targetRigidBody, 'floor') && !fallen) {
-			lastSafePosition = rigidBody.worldCom();
+		if (isElement(targetRigidBody, 'floor') && !$avatarStore.fallen) {
+			$avatarStore.lastSafePosition = rigidBody.worldCom();
 		}
 
 		const { x, z } = rigidBody.rotation();
 
 		if (anyExceeds([x, z], FALL_THRESHOLD)) {
-			fallen = true;
+			$avatarStore.fallen = true;
 		}
 	}
 
@@ -185,6 +187,6 @@
 			restitution={config.restitution}
 			on:collisionenter={handleMainCollisionEnter}
 		/>
-		<AvatarModel {physicalState} />
+		<AvatarModel physicalState={$avatarStore.physicalState} />
 	</RigidBody>
 </T.Group>
