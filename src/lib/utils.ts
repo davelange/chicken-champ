@@ -1,5 +1,6 @@
 import { Quaternion, Vector3, type Vector } from '@dimforge/rapier3d-compat';
 import type { Color } from 'three';
+import type { KeyMap } from './keyq';
 
 export function getFromUrl(keys: string[], url: URL) {
 	return keys.reduce(
@@ -138,4 +139,20 @@ export function interpolateColor(
 
 		return output as unknown as Color;
 	};
+}
+
+export function getForceFromKey(key: KeyMap, moveBy: number) {
+	let direction = { x: 0, y: 0, z: 0 };
+
+	if (key.w) {
+		direction.z -= moveBy;
+	} else if (key.a) {
+		direction.x -= moveBy;
+	} else if (key.d) {
+		direction.x += moveBy;
+	} else if (key.s) {
+		direction.z += moveBy;
+	}
+
+	return direction;
 }

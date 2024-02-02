@@ -1,5 +1,21 @@
 import { Easing } from '$lib/easing';
 
+type MotionOptions = { force: Partial<Axes<number>>; onEnd: () => void };
+
+const getResetMotion = ({ onEnd }: { onEnd: () => void }) => [
+	{
+		force: { y: 10 },
+		duration: 40,
+		easing: { y: Easing.OutQuint },
+		next: {
+			force: { y: -9 },
+			duration: 40,
+			easing: { y: Easing.OutCubic },
+			onEnd
+		}
+	}
+];
+
 export const FALL_THRESHOLD = 0.3;
 export const avatarConfigs = {
 	heavy: {
@@ -8,7 +24,7 @@ export const avatarConfigs = {
 		gravityScale: 4,
 		contactForceEventThreshold: 1,
 		restitution: 0.1,
-		walkMotion: (force: Partial<Axes<number>>, onEnd: () => void) => [
+		getWalkMotion: ({ force, onEnd }: MotionOptions) => [
 			{
 				name: 'walkXZ',
 				force,
@@ -22,7 +38,8 @@ export const avatarConfigs = {
 				duration: 20,
 				easing: { y: Easing.OutCubic }
 			}
-		]
+		],
+		getResetMotion
 	},
 	light: {
 		moveBy: 4,
@@ -30,7 +47,7 @@ export const avatarConfigs = {
 		gravityScale: 4,
 		restitution: 0.3,
 		contactForceEventThreshold: 1,
-		walkMotion: (force: Partial<Axes<number>>, onEnd: () => void) => [
+		getWalkMotion: ({ force, onEnd }: MotionOptions) => [
 			{
 				name: 'walkXZ',
 				force,
@@ -44,20 +61,7 @@ export const avatarConfigs = {
 				duration: 12,
 				easing: { y: Easing.OutCirc }
 			}
-		]
+		],
+		getResetMotion
 	}
 };
-
-export const resetMotion = ({ onEnd }: { onEnd: () => void }) => [
-	{
-		force: { y: 10 },
-		duration: 40,
-		easing: { y: Easing.OutQuint },
-		next: {
-			force: { y: -9 },
-			duration: 40,
-			easing: { y: Easing.OutCubic },
-			onEnd
-		}
-	}
-];

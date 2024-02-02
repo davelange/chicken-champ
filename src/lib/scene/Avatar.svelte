@@ -15,10 +15,11 @@
 		anyExceeds,
 		checkOrientation,
 		getAdjustedRotation,
+		getForceFromKey,
 		isElement,
 		snapToGrid
 	} from '$lib/utils';
-	import { FALL_THRESHOLD, avatarConfigs, resetMotion } from '$lib/config/avatar';
+	import { FALL_THRESHOLD, avatarConfigs } from '$lib/config/avatar';
 	import { swipe } from '$lib/swipe';
 	import { gameStore } from '$lib/game';
 
@@ -79,48 +80,35 @@
 		}
 	}
 
-	function getForceFromKey(map: KeyMap) {
-		let direction = { x: 0, y: 0, z: 0 };
-
-		if (map.w) {
-			direction.z -= config.moveBy;
-		} else if (map.a) {
-			direction.x -= config.moveBy;
-		} else if (map.d) {
-			direction.x += config.moveBy;
-		} else if (map.s) {
-			direction.z += config.moveBy;
-		}
-
-		return direction;
-	}
-
-	async function move(direction: Axes<number>) {
-		const motion = config.walkMotion(direction, () => {
-			if (qdKeystroke) {
-				updateRotation(qdKeystroke);
-				move(qdKeystroke);
-				qdKeystroke = undefined;
+	async function applyMotion(force: Axes<number>) {
+		const motion = config.getWalkMotion({
+			force,
+			onEnd: () => {
+				if (qdKeystroke) {
+					applyMotion(qdKeystroke);
+					qdKeystroke = undefined;
+				}
+				avatarTracker.update(rigidBody.translation());
 			}
-			let pos = rigidBody.translation();
-			avatarTracker.update(pos);
 		});
 
+		updateRotation(force);
 		anim.go(motion);
 	}
 
-	async function handleKey(map: KeyMap, state: KeyState) {
-		if (!$gameStore.moveAllowed) {
+	async function handleKey(key: KeyMap, state: KeyState) {
+		if (!$gameStore.moveAllowed || !rigidBody || !$avatarTracker) {
 			return;
 		}
 
-		if (map.r && state === 'keyDown') {
+		// reset
+		if (key.r && state === 'keyDown') {
 			const closest = snapToGrid(lastSafePosition, 4);
 			rigidBody.setRotation(new Quaternion(0, 0, 0), true);
 			rigidBody.setTranslation(closest, true);
 
 			anim.go(
-				resetMotion({
+				config.getResetMotion({
 					onEnd: () => {
 						fallen = false;
 					}
@@ -130,7 +118,7 @@
 			return;
 		}
 
-		if ((!map.w && !map.a && !map.s && !map.d) || !rigidBody || !$avatarTracker || fallen) {
+		if ((!key.w && !key.a && !key.s && !key.d) || fallen) {
 			return;
 		}
 
@@ -144,15 +132,14 @@
 
 		if ($anim.inMotion) {
 			// Queue max of 1 move to be played when current motion ends
-			qdKeystroke = getForceFromKey({ ...map });
+			qdKeystroke = getForceFromKey({ ...key }, config.moveBy);
 
 			return;
 		}
 
-		let force = getForceFromKey(map);
+		let force = getForceFromKey(key, config.moveBy);
 
-		updateRotation(force);
-		move(force);
+		applyMotion(force);
 	}
 
 	// stop animer motion when avatar hits wall
