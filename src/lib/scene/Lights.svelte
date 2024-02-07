@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { avatarTracker } from '$lib/avatarTracker';
 	import { configStore } from '$lib/config';
 	import { T } from '@threlte/core';
 	import { CameraHelper, DirectionalLight } from 'three';
@@ -8,7 +7,7 @@
 	let light = new DirectionalLight();
 	let shadow = new DirectionalLightShadow();
 
-	let d = 50;
+	let d = 80;
 
 	let x = 3;
 
@@ -18,21 +17,14 @@
 	shadow.camera.top = -d;
 	shadow.camera.bottom = d;
 	shadow.camera.near = -10;
-	shadow.camera.position.set(x, 20, 10);
+	shadow.camera.position.set(x, 1, -4);
 
 	const helperCamera = new CameraHelper(shadow.camera);
 </script>
 
-<T.DirectionalLight
-	bind:light
-	position={[3, 20, 10]}
-	intensity={2}
-	{shadow}
-	castShadow
-	target={$avatarTracker}
-/>
+<T.DirectionalLight bind:light position={[3, 20, -4]} intensity={2} {shadow} castShadow />
 {#if $configStore.shadowLight}
 	<T is={helperCamera} />
 {/if}
-<T.DirectionalLight position={[-3, 20, -10]} intensity={1} />
+<T.DirectionalLight position={[-3, 20, 0]} intensity={1} />
 <T.AmbientLight intensity={0.5} />

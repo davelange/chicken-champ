@@ -3,7 +3,7 @@
 	import { RigidBody, AutoColliders, Collider } from '@threlte/rapier';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
 	import { configStore } from '$lib/config';
-	import { createTransition } from '@threlte/extras';
+	import { RoundedBoxGeometry, createTransition } from '@threlte/extras';
 	import type { Mesh, MeshStandardMaterial } from 'three';
 	import { bounceInOut, quadIn } from 'svelte/easing';
 	import { interpolateColor, randInRange } from '$lib/utils';
@@ -62,7 +62,7 @@
 						key={ind}
 						transition={moveUpIn}
 					>
-						<T.BoxGeometry />
+						<RoundedBoxGeometry />
 						<T.MeshStandardMaterial
 							transition={fadeIn}
 							color={introComplete ? $configStore.mazeColor : $configStore.floorColor}

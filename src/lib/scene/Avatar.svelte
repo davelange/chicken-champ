@@ -5,24 +5,21 @@
 		Vector3 as RapierVector3
 	} from '@dimforge/rapier3d-compat';
 	import { Collider, RigidBody } from '@threlte/rapier';
-	import { Vector3, Quaternion } from 'three';
+	import { Quaternion } from 'three';
 	import { AvatarModel } from '$lib/scene';
 	import { keyq, type KeyMap, type KeyState } from '$lib/keyq';
 	import { animer } from '$lib/animer';
-	import { avatarTracker } from '$lib/avatarTracker';
 	import { avatarStore } from '$lib/avatar';
 	import {
-		anyExceeds,
 		checkOrientation,
 		getAdjustedRotation,
 		getForceFromKey,
 		isElement,
 		snapToGrid
 	} from '$lib/utils';
-	import { FALL_THRESHOLD, avatarConfigs } from '$lib/config/avatar';
+	import { avatarConfigs } from '$lib/config/avatar';
 	import { swipe } from '$lib/swipe';
 	import { gameStore } from '$lib/game';
-	import { onMount } from 'svelte';
 
 	export let initialPosition: Triplet;
 
@@ -43,12 +40,6 @@
 		// init last safe position
 		$avatarStore.lastSafePosition = new RapierVector3(...initialPosition);
 	}
-
-	onMount(() => {
-		// setup shadow tracker
-		scene.add($avatarTracker);
-		avatarTracker.update(new Vector3(...initialPosition));
-	});
 
 	function updateRotation(force: Axes<number>) {
 		const currentRot = rigidBody.rotation();
@@ -90,7 +81,6 @@
 					applyMotion(qdKeystroke);
 					qdKeystroke = undefined;
 				}
-				avatarTracker.update(rigidBody.translation());
 			}
 		});
 
@@ -99,7 +89,7 @@
 	}
 
 	async function handleKey(key: KeyMap, state: KeyState) {
-		if (!$gameStore.moveAllowed || !rigidBody || !$avatarTracker) {
+		if (!$gameStore.moveAllowed || !rigidBody) {
 			return;
 		}
 
