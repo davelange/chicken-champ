@@ -43,9 +43,9 @@ export const avatarConfigs = {
 	},
 	light: {
 		moveBy: 4,
-		angularDamping: 0.4,
+		angularDamping: 0.3,
 		gravityScale: 4,
-		restitution: 0.3,
+		restitution: 0.2,
 		contactForceEventThreshold: 1,
 		getWalkMotion: ({ force, onEnd }: MotionOptions) => [
 			{

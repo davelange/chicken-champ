@@ -15,6 +15,7 @@
 	export let maze: MazeBlock[];
 
 	let rigidBody: RapierRigidBody;
+	let introComplete = false;
 
 	const moveUpIn = createTransition<Mesh>((ref) => {
 		return {
@@ -37,6 +38,11 @@
 		return {
 			tick(t) {
 				ref.color.set(animateColor(t));
+
+				if (t === 1) {
+					ref.color.set($configStore.mazeColor);
+					introComplete = true;
+				}
 			},
 			easing: quadIn,
 			duration: 1000,
@@ -59,7 +65,7 @@
 						<T.BoxGeometry />
 						<T.MeshStandardMaterial
 							transition={fadeIn}
-							color={$configStore.floorColor}
+							color={introComplete ? $configStore.mazeColor : $configStore.floorColor}
 							flatShading
 						/>
 					</T.Mesh>

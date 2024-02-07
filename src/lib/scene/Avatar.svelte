@@ -156,10 +156,12 @@
 		if (isElement(targetRigidBody, 'floor') && !$avatarStore.fallen) {
 			$avatarStore.lastSafePosition = rigidBody.worldCom();
 		}
+	}
 
-		const { x, z } = rigidBody.rotation();
-
-		if (anyExceeds([x, z], FALL_THRESHOLD)) {
+	// detect falls
+	function handleHeadSensorEnter({ targetRigidBody }: { targetRigidBody: RapierRigidBody | null }) {
+		if (isElement(targetRigidBody, 'floor')) {
+			anim.stop();
 			$avatarStore.fallen = true;
 		}
 	}
@@ -188,5 +190,14 @@
 			on:collisionenter={handleMainCollisionEnter}
 		/>
 		<AvatarModel physicalState={$avatarStore.physicalState} />
+		<T.Group position={[0, 2, 0]}>
+			<Collider
+				mass={0.01}
+				sensor
+				shape="cuboid"
+				args={[1.5, 0.2, 1]}
+				on:sensorenter={handleHeadSensorEnter}
+			/>
+		</T.Group>
 	</RigidBody>
 </T.Group>
