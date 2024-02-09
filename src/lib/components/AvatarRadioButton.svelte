@@ -5,11 +5,11 @@
 </script>
 
 <label
-	class="flex flex-col items-center justify-end gap-2 rounded-md h-[200px] w-[200px] focus-within:border-yellow-300 peer-checked:border-yellow-300 hover:border-yellow-300 py-4 peer-focus:border-yellow-300"
+	class="flex flex-col items-center justify-end gap-2 rounded-md focus-within:border-yellow-300 peer-checked:border-yellow-300 hover:border-yellow-300 py-4 peer-focus:border-yellow-300"
 	for={type}
 >
-	<img src="/chicken_sm.png" alt={label} class={type} />
-	<div class="flex gap-2 items-center">
+	<img src="/chicken_sm.png" alt={label} class="max-w-[100px] {type}" />
+	<div class="flex gap-1 lg:gap-2 items-center">
 		<input type="radio" name="avatarType" value={type} id={type} required class="" />
 		<p>{label}</p>
 	</div>

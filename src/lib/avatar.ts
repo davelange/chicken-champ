@@ -7,8 +7,35 @@ type WritableStore = {
 	lastSafePosition: RapierVector3;
 };
 
-export const avatarStore = writable<WritableStore>({
-	fallen: false,
-	physicalState: 'idle',
-	lastSafePosition: new RapierVector3(0, 0, 0)
-});
+const avatarEvents = ['reset'] as const;
+type AvatarEvent = (typeof avatarEvents)[number];
+
+function createAvatarStore() {
+	const store = writable<WritableStore>({
+		fallen: false,
+		physicalState: 'idle',
+		lastSafePosition: new RapierVector3(0, 0, 0)
+	});
+
+	const eventActions: Record<AvatarEvent, undefined | (() => void)> = {
+		reset: undefined
+	};
+
+	function publish(event: AvatarEvent) {
+		eventActions[event]?.();
+	}
+
+	function on(event: AvatarEvent, cb: () => void) {
+		eventActions[event] = cb;
+	}
+
+	return {
+		...store,
+		on,
+		publish
+	};
+}
+
+const avatarStore = createAvatarStore();
+
+export { avatarStore };

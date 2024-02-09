@@ -23,11 +23,11 @@
 
 <form
 	action="/maze"
-	class="flex flex-col gap-8 max-w-[90vw] mx-auto"
+	class="flex flex-col gap-8 max-w-[90vw] mx-auto my-4"
 	style="--anim-r-x: {animRX}deg"
 >
 	<h2 class="">Choose your chicken</h2>
-	<div class="flex gap-8 flex-wrap justify-center">
+	<div class="flex gap-8 justify-center">
 		<AvatarRadioButton type="light" />
 		<AvatarRadioButton type="heavy" />
 	</div>

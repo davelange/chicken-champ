@@ -1,9 +1,16 @@
-<div
-	class="root absolute inset-0 bottom-[10vh] h-fit m-auto w-32 text-center px-2 py-1 border border-white bg-black bg-opacity-25 rounded-md"
+<script lang="ts">
+	import { avatarStore } from '$lib/avatar';
+</script>
+
+<button
+	type="button"
+	class="root absolute inset-0 bottom-[10vh] h-fit m-auto w-32 text-center px-2 py-1 border border-white bg-black bg-opacity-50 rounded-md"
+	on:click={() => avatarStore.publish('reset')}
 >
 	<p>Help!</p>
-	<p>R to reset</p>
-</div>
+	<p class="hidden lg:block">R to reset</p>
+	<p class="block lg:hidden">Click to reset</p>
+</button>
 
 <style>
 	@keyframes pulse {

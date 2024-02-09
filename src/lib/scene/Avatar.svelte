@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { T, useThrelte } from '@threlte/core';
+	import { T } from '@threlte/core';
 	import {
 		type RigidBody as RapierRigidBody,
 		Vector3 as RapierVector3
@@ -28,8 +28,6 @@
 	let rigidBody: RapierRigidBody;
 	let qdKeystroke: Axes<number> | undefined = undefined;
 	let anim = animer();
-
-	let { scene } = useThrelte();
 
 	$: if (rigidBody) {
 		// create animer
@@ -88,6 +86,20 @@
 		anim.go(motion);
 	}
 
+	avatarStore.on('reset', () => {
+		const closest = snapToGrid($avatarStore.lastSafePosition, 4);
+		rigidBody.setRotation(new Quaternion(0, 0, 0), true);
+		rigidBody.setTranslation(closest, true);
+
+		anim.go(
+			config.getResetMotion({
+				onEnd: () => {
+					$avatarStore.fallen = false;
+				}
+			})
+		);
+	});
+
 	async function handleKey(key: KeyMap, state: KeyState) {
 		if (!$gameStore.moveAllowed || !rigidBody) {
 			return;
@@ -95,17 +107,7 @@
 
 		// reset
 		if (key.r && state === 'keyDown') {
-			const closest = snapToGrid($avatarStore.lastSafePosition, 4);
-			rigidBody.setRotation(new Quaternion(0, 0, 0), true);
-			rigidBody.setTranslation(closest, true);
-
-			anim.go(
-				config.getResetMotion({
-					onEnd: () => {
-						$avatarStore.fallen = false;
-					}
-				})
-			);
+			avatarStore.publish('reset');
 
 			return;
 		}

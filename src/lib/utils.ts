@@ -156,3 +156,7 @@ export function getForceFromKey(key: KeyMap, moveBy: number) {
 
 	return direction;
 }
+
+export function isMobile() {
+	return window.innerWidth < 540;
+}
