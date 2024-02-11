@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { configStore } from '$lib/config';
+	import { gameStore } from '$lib/game';
 
 	let open = false;
 
@@ -53,6 +54,7 @@
 				<input type="color" bind:value={$configStore.floorColor} />
 				Floor color
 			</label>
+			<button type="button" on:click={gameStore.restartMaze}> Restart </button>
 		</form>
 	{/if}
 </div>

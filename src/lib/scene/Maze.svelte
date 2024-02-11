@@ -9,6 +9,7 @@
 	import { interpolateColor, randInRange } from '$lib/utils';
 	import { gameStore } from '$lib/game';
 	import { ControlsDemo } from '$lib/scene';
+	import { MAZE_POS_OFFSET } from '$lib/config/maze';
 
 	export let entrance: Triplet;
 	export let exit: Triplet;
@@ -51,7 +52,7 @@
 	});
 </script>
 
-<T.Group position={[-24, 1, -24]}>
+<T.Group position={[-MAZE_POS_OFFSET, 1, -MAZE_POS_OFFSET]}>
 	{#if $gameStore.gameState !== 'idle'}
 		<RigidBody type="fixed" bind:rigidBody userData={{ name: 'maze' }} dominance={10}>
 			<AutoColliders shape={'cuboid'}>
@@ -74,10 +75,10 @@
 		</RigidBody>
 
 		<T.Group position={entrance}>
-			<Collider sensor shape="cuboid" args={[0.1, 3, 3]} on:sensorenter={gameStore.onMazeEnter} />
+			<Collider sensor shape="cuboid" args={[0.1, 3, 3]} on:sensorenter={gameStore.enterMaze} />
 		</T.Group>
 		<T.Group position={exit}>
-			<Collider sensor shape="cuboid" args={[0.1, 3, 3]} on:sensorenter={gameStore.onMazeExit} />
+			<Collider sensor shape="cuboid" args={[0.1, 3, 3]} on:sensorenter={gameStore.exitMaze} />
 		</T.Group>
 	{/if}
 

@@ -2,7 +2,8 @@
 	import { T } from '@threlte/core';
 	import {
 		type RigidBody as RapierRigidBody,
-		Vector3 as RapierVector3
+		Vector3 as RapierVector3,
+		Vector3
 	} from '@dimforge/rapier3d-compat';
 	import { Collider, RigidBody } from '@threlte/rapier';
 	import { Quaternion } from 'three';
@@ -15,11 +16,14 @@
 		getAdjustedRotation,
 		getForceFromKey,
 		isElement,
+		quaternion,
 		snapToGrid
 	} from '$lib/utils';
 	import { avatarConfigs } from '$lib/config/avatar';
 	import { swipe } from '$lib/swipe';
 	import { gameStore } from '$lib/game';
+	import { MAZE_POS_OFFSET } from '$lib/config/maze';
+	import { onMount } from 'svelte';
 
 	export let initialPosition: Triplet;
 
@@ -86,10 +90,12 @@
 		anim.go(motion);
 	}
 
-	avatarStore.on('reset', () => {
+	function reset() {
 		const closest = snapToGrid($avatarStore.lastSafePosition, 4);
 		rigidBody.setRotation(new Quaternion(0, 0, 0), true);
 		rigidBody.setTranslation(closest, true);
+
+		rigidBody;
 
 		anim.go(
 			config.getResetMotion({
@@ -98,7 +104,19 @@
 				}
 			})
 		);
-	});
+	}
+
+	function restartMaze() {
+		rigidBody.setTranslation(
+			new Vector3(
+				initialPosition[0] - MAZE_POS_OFFSET,
+				rigidBody.translation().y,
+				initialPosition[2] - MAZE_POS_OFFSET
+			),
+			false
+		);
+		rigidBody.setRotation(quaternion.xPos, true);
+	}
 
 	async function handleKey(key: KeyMap, state: KeyState) {
 		if (!$gameStore.moveAllowed || !rigidBody) {
@@ -158,9 +176,19 @@
 		}
 	}
 
-	keyq.subscribe(handleKey);
-	swipe.subscribe((data) => {
-		handleKey(data, 'keyUp');
+	onMount(() => {
+		avatarStore.on('reset', reset, 'avatar');
+		gameStore.on('restartMaze', restartMaze, 'avatar');
+		keyq.on('keyDown', (data) => handleKey(data, 'keyDown'), 'avatar');
+		keyq.on('keyUp', (data) => handleKey(data, 'keyUp'), 'avatar');
+		swipe.on('swipe', (data) => handleKey(data, 'keyUp'), 'avatar');
+
+		return () => {
+			avatarStore.off('avatar');
+			gameStore.off('avatar');
+			keyq.off('avatar');
+			swipe.off('avatar');
+		};
 	});
 </script>
 

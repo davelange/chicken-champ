@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 	import { Canvas } from '@threlte/core';
 	import { avatarStore } from '$lib/avatar';
+	import EndPanel from '$lib/components/EndPanel.svelte';
 
 	onMount(() => {
 		gameStore.init();
@@ -17,6 +18,8 @@
 <Timer />
 <Config />
 
-{#if $avatarStore.fallen}
+{#if $gameStore.gameState === 'done'}
+	<EndPanel />
+{:else if $avatarStore.fallen}
 	<ResetHint />
 {/if}

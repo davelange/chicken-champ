@@ -1,33 +1,24 @@
+import { pubs } from './pubs';
+
 type PossibleKey = 'w' | 'a' | 's' | 'd' | 'Space' | 'r';
 export type KeyMap = Partial<Record<PossibleKey, boolean>>;
 export type KeyState = 'keyDown' | 'keyUp';
-type Subscriber = (map: KeyMap, state: KeyState) => void;
 
 const POLL_INTERVAL = 60;
 
 type KeyQState = {
-	subs: Subscriber[];
 	map: KeyMap;
 	lockMap: KeyMap;
 	pending: boolean;
 };
 
 const state: KeyQState = {
-	subs: [],
 	pending: false,
 	map: {},
 	lockMap: {}
 };
 
-function publish(map: KeyMap, keyState: KeyState) {
-	state.subs.forEach((fn) => {
-		fn(map, keyState);
-	});
-}
-
-function subscribe(fn: Subscriber) {
-	state.subs.push(fn);
-}
+const { publish, on, off } = pubs(['keyDown', 'keyUp']);
 
 function add(key: PossibleKey) {
 	if (state.lockMap[key]) {
@@ -40,7 +31,7 @@ function add(key: PossibleKey) {
 	if (!state.pending) {
 		setTimeout(() => {
 			state.pending = false;
-			publish(state.map, 'keyDown');
+			publish('keyDown', state.map);
 		}, POLL_INTERVAL);
 
 		state.pending = true;
@@ -56,7 +47,7 @@ function remove(key: PossibleKey) {
 	if (!state.pending) {
 		setTimeout(() => {
 			state.pending = false;
-			publish(mapAtRelease, 'keyUp');
+			publish('keyUp', mapAtRelease);
 		}, POLL_INTERVAL);
 
 		state.pending = true;
@@ -92,5 +83,6 @@ function getKeyId(event: KeyboardEvent): PossibleKey {
 export const keyq = {
 	init,
 	destroy,
-	subscribe
+	on,
+	off
 };

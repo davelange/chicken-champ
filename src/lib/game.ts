@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
 import { getFromUrl, isElement } from './utils';
 import { goto } from '$app/navigation';
+import { pubs } from './pubs';
 
 type WritableStore = {
 	gameState: 'idle' | 'inProgress' | 'done';
@@ -11,6 +12,7 @@ type WritableStore = {
 	seed: string | undefined;
 	entryTime: number;
 	exitTime: number;
+	timeCompleted: number;
 };
 
 function createGameStore() {
@@ -21,7 +23,8 @@ function createGameStore() {
 		avatarType: 'light',
 		seed: undefined,
 		entryTime: 0,
-		exitTime: 0
+		exitTime: 0,
+		timeCompleted: 0
 	});
 	let ref: WritableStore;
 	store.subscribe((val) => (ref = val));
@@ -33,6 +36,8 @@ function createGameStore() {
 		}));
 	}
 
+	const { on, off, publish } = pubs(['inProgress', 'done', 'restartMaze']);
+
 	function init() {
 		const config = getFromUrl(['avatarType', 'seed'], new URL(location.href));
 
@@ -43,25 +48,42 @@ function createGameStore() {
 		_set(config);
 	}
 
-	function onMazeEnter({ targetRigidBody }: { targetRigidBody: RapierRigidBody | null }) {
+	function enterMaze({ targetRigidBody }: { targetRigidBody: RapierRigidBody | null }) {
 		if (!targetRigidBody || !isElement(targetRigidBody, 'avatar') || ref.inMaze) {
 			return;
 		}
+
 		_set({ inMaze: true });
 	}
 
-	function onMazeExit({ targetRigidBody }: { targetRigidBody: RapierRigidBody | null }) {
+	function exitMaze({ targetRigidBody }: { targetRigidBody: RapierRigidBody | null }) {
 		if (!targetRigidBody || !isElement(targetRigidBody, 'avatar')) {
 			return;
 		}
 
+		const now = Date.now();
+
 		if (ref.inMaze) {
-			_set({ gameState: 'done', exitTime: Date.now() });
+			_set({ gameState: 'done', exitTime: now, timeCompleted: now - ref.entryTime });
+			publish('done');
 		}
 	}
 
-	function onCountdownEnded() {
+	function restartMaze() {
+		_set({
+			gameState: 'inProgress',
+			exitTime: 0,
+			entryTime: Date.now(),
+			timeCompleted: 0,
+			inMaze: false
+		});
+		publish('restartMaze');
+	}
+
+	function countdownEnded() {
 		_set({ gameState: 'inProgress', entryTime: Date.now() });
+		publish('inProgress');
+
 		setTimeout(() => {
 			_set({ moveAllowed: true });
 		}, 1000);
@@ -69,10 +91,13 @@ function createGameStore() {
 
 	return {
 		...store,
-		onMazeEnter,
-		onMazeExit,
-		onCountdownEnded,
-		init
+		enterMaze,
+		exitMaze,
+		restartMaze,
+		countdownEnded,
+		init,
+		on,
+		off
 	};
 }
 

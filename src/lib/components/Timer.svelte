@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { configStore } from '$lib/config';
 	import { gameStore } from '$lib/game';
+	import { onMount } from 'svelte';
 
 	let startTime: Date = new Date();
 	let interval: ReturnType<typeof setInterval>;
@@ -19,13 +20,19 @@
 		timeStr = `${minsStr}:${secondsStr}:${millisecondsStr}`;
 	}
 
-	gameStore.subscribe((state) => {
-		if (state.gameState === 'inProgress' && !interval) {
-			startTime = new Date($gameStore.entryTime);
-			interval = setInterval(getTimeDiffDesc, 100);
-		} else if (state.gameState === 'done') {
-			clearInterval(interval);
-		}
+	function start() {
+		startTime = new Date($gameStore.entryTime);
+		interval = setInterval(getTimeDiffDesc, 100);
+	}
+
+	onMount(() => {
+		gameStore.on('inProgress', start, 'timer');
+		gameStore.on('restartMaze', start, 'timer');
+		gameStore.on('done', () => clearInterval(interval), 'timer');
+
+		return () => {
+			gameStore.off('timer');
+		};
 	});
 </script>
 

@@ -11,7 +11,7 @@
 
 	function runCountdown() {
 		if (time === 1) {
-			gameStore.onCountdownEnded();
+			gameStore.countdownEnded();
 			clearTimeout(timeout);
 			return;
 		}
@@ -21,7 +21,6 @@
 		}
 
 		time -= 1;
-
 		timeout = setTimeout(runCountdown, 1000);
 	}
 

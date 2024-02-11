@@ -1,14 +1,12 @@
 import { writable } from 'svelte/store';
 import { Vector3 as RapierVector3 } from '@dimforge/rapier3d-compat';
+import { pubs } from './pubs';
 
 type WritableStore = {
 	fallen: boolean;
 	physicalState: AvatarPhysicalState;
 	lastSafePosition: RapierVector3;
 };
-
-const avatarEvents = ['reset'] as const;
-type AvatarEvent = (typeof avatarEvents)[number];
 
 function createAvatarStore() {
 	const store = writable<WritableStore>({
@@ -17,21 +15,12 @@ function createAvatarStore() {
 		lastSafePosition: new RapierVector3(0, 0, 0)
 	});
 
-	const eventActions: Record<AvatarEvent, undefined | (() => void)> = {
-		reset: undefined
-	};
-
-	function publish(event: AvatarEvent) {
-		eventActions[event]?.();
-	}
-
-	function on(event: AvatarEvent, cb: () => void) {
-		eventActions[event] = cb;
-	}
+	const { on, off, publish } = pubs(['reset']);
 
 	return {
 		...store,
 		on,
+		off,
 		publish
 	};
 }

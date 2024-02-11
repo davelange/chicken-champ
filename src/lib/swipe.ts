@@ -1,7 +1,6 @@
-import { writable } from 'svelte/store';
 import { neg, notNeg } from './utils';
+import { pubs } from './pubs';
 
-type Subscriber = (data: any) => void;
 type Point = [x: number, y: number];
 
 const X = 0;
@@ -9,17 +8,17 @@ const Y = 1;
 
 type SwipeState = {
 	pending: boolean;
-	subs: Subscriber[];
 	startPoint: Point | undefined;
 	endPoint: Point | undefined;
 };
 
 const state: SwipeState = {
-	subs: [],
 	pending: false,
 	startPoint: undefined,
 	endPoint: undefined
 };
+
+const { on, off, publish } = pubs(['swipe']);
 
 function getDirection() {
 	if (state.startPoint === undefined || state.endPoint === undefined) {
@@ -54,16 +53,6 @@ function getDirection() {
 	}
 }
 
-function publish(data: any) {
-	state.subs.forEach((fn) => {
-		fn(data);
-	});
-}
-
-function subscribe(fn: Subscriber) {
-	state.subs.push(fn);
-}
-
 function handleTouchStart() {
 	if (state.pending) {
 		return;
@@ -80,7 +69,7 @@ function handleTouchEnd() {
 	const swipeDir = getDirection();
 
 	if (swipeDir) {
-		publish(swipeDir);
+		publish('swipe', swipeDir);
 	}
 }
 
@@ -109,7 +98,6 @@ function destroy() {
 export const swipe = {
 	init,
 	destroy,
-	subscribe
+	on,
+	off
 };
-
-export const debug = writable('');
