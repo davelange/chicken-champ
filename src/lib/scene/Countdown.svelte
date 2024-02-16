@@ -5,7 +5,7 @@
 	import { Text } from '@threlte/extras';
 	import { onMount } from 'svelte';
 
-	let time = 5;
+	let time = 3;
 	let timeout: ReturnType<typeof setTimeout>;
 	export let onEnd: () => void;
 

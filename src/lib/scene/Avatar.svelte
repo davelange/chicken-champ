@@ -12,6 +12,7 @@
 	import { animer } from '$lib/animer';
 	import { avatarStore } from '$lib/avatar';
 	import {
+		anyExceeds,
 		checkOrientation,
 		getAdjustedRotation,
 		getForceFromKey,
@@ -31,6 +32,7 @@
 
 	let rigidBody: RapierRigidBody;
 	let qdKeystroke: Axes<number> | undefined = undefined;
+	let allowInput = true;
 	let anim = animer();
 
 	$: if (rigidBody) {
@@ -95,8 +97,6 @@
 		rigidBody.setRotation(new Quaternion(0, 0, 0), true);
 		rigidBody.setTranslation(closest, true);
 
-		rigidBody;
-
 		anim.go(
 			config.getResetMotion({
 				onEnd: () => {
@@ -119,7 +119,7 @@
 	}
 
 	async function handleKey(key: KeyMap, state: KeyState) {
-		if (!$gameStore.moveAllowed || !rigidBody) {
+		if (!$gameStore.moveAllowed || !rigidBody || !allowInput) {
 			return;
 		}
 
@@ -165,6 +165,13 @@
 		}
 		if (isElement(targetRigidBody, 'floor') && !$avatarStore.fallen) {
 			$avatarStore.lastSafePosition = rigidBody.worldCom();
+
+			if (anyExceeds([rigidBody.rotation().x, rigidBody.rotation().z], 0.3)) {
+				allowInput = false;
+				setTimeout(() => {
+					allowInput = true;
+				}, 1000);
+			}
 		}
 	}
 
