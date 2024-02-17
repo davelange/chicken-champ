@@ -11,7 +11,7 @@ export function pubs<TEvent extends string>(events: TEvent[]) {
 		subs[event].forEach((sub) => sub.fn(data));
 	}
 
-	function on(event: TEvent, fn: Subscriber['fn'], context: Subscriber['context']) {
+	function on(event: TEvent, fn: Subscriber['fn'], context?: Subscriber['context']) {
 		subs[event].push({ fn, context });
 	}
 

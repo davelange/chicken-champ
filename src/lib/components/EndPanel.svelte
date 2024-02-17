@@ -17,6 +17,8 @@
 		<button class="underline" type="button" on:click={gameStore.restartMaze}>
 			Try this maze again
 		</button>
-		<button class="underline" type="button">Try another maze</button>
+		<button class="underline" type="button" on:click={gameStore.goToNewGame}>
+			Try another maze
+		</button>
 	</div>
 </div>

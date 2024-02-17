@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
-import { getFromUrl, isElement } from './utils';
+import { getFromUrl, isElement, randInRange } from './utils';
 import { goto } from '$app/navigation';
 import { pubs } from './pubs';
 
@@ -39,13 +39,30 @@ function createGameStore() {
 	const { on, off, publish } = pubs(['inProgress', 'done', 'restartMaze']);
 
 	function init() {
-		const config = getFromUrl(['avatarType', 'seed'], new URL(location.href));
+		const config = getFromUrl(['avatar', 'maze'], new URL(location.href));
 
-		if ((config.avatarType !== 'heavy' && config.avatarType !== 'light') || !config.seed) {
-			return goto('/');
+		if ((config.avatar === 'heavy' || config.avatar === 'light') && config.maze) {
+			_set({
+				avatarType: config.avatar,
+				seed: config.maze
+			});
+		} else {
+			goto(`/`);
 		}
+	}
 
-		_set(config);
+	function goToNewGame() {
+		const newSeed = Date.now().toString();
+		goto(`/maze?avatar=${ref.avatarType}&maze=${newSeed}`);
+		_set({
+			gameState: 'inProgress',
+			exitTime: 0,
+			entryTime: Date.now(),
+			timeCompleted: 0,
+			inMaze: false,
+			seed: newSeed
+		});
+		publish('restartMaze');
 	}
 
 	function enterMaze({ targetRigidBody }: { targetRigidBody: RapierRigidBody | null }) {
@@ -95,6 +112,7 @@ function createGameStore() {
 		exitMaze,
 		restartMaze,
 		countdownEnded,
+		goToNewGame,
 		init,
 		on,
 		off

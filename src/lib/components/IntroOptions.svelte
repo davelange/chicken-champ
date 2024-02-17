@@ -33,12 +33,12 @@
 	</div>
 
 	<div class="flex flex-col gap-4">
-		<label for="heavy">Maze seed {isSeedRandom ? '(random)' : ''}</label>
+		<label for="maze">Maze seed {isSeedRandom ? '(random)' : ''}</label>
 		<input
 			type="string"
-			name="seed"
+			name="maze"
 			bind:value={defaultSeed}
-			id="seed"
+			id="maze"
 			class="bg-zinc-800 px-3 py-1 text-zinc-100 text-center text-sm"
 		/>
 	</div>

@@ -10,7 +10,7 @@
 >
 	<img src="/chicken_sm.png" alt={label} class="max-w-[100px] {type}" />
 	<div class="flex gap-1 lg:gap-2 items-center">
-		<input type="radio" name="avatarType" value={type} id={type} required class="" />
+		<input type="radio" name="avatar" value={type} id={type} required class="" />
 		<p>{label}</p>
 	</div>
 </label>

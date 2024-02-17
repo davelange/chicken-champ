@@ -13,12 +13,14 @@
 	interactivity();
 	transitions();
 
-	const { entrance, exit, maze } = createMaze({
+	export let seed: string;
+
+	$: ({ entrance, exit, maze } = createMaze({
 		width: 8,
 		height: 8,
 		sizeUnit: 4,
-		seed: $gameStore.seed
-	});
+		seed
+	}));
 
 	onMount(() => {
 		keyq.init();
