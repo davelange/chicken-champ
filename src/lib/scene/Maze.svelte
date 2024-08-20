@@ -1,73 +1,92 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
 	import { RigidBody, AutoColliders, Collider } from '@threlte/rapier';
-	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
-	import { configStore } from '$lib/config';
-	import { RoundedBoxGeometry, createTransition } from '@threlte/extras';
-	import type { Mesh, MeshStandardMaterial } from 'three';
-	import { bounceInOut, quadIn } from 'svelte/easing';
-	import { interpolateColor, randInRange } from '$lib/utils';
-	import { gameStore } from '$lib/game';
+	import { Vector3, type RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
+	import { getConfig } from '$lib/config.svelte';
+	import { RoundedBoxGeometry } from '@threlte/extras';
+	import { getGameState } from '$lib/game.svelte';
 	import { ControlsDemo } from '$lib/scene';
 	import { MAZE_POS_OFFSET } from '$lib/config/maze';
+	import type { Snippet } from 'svelte';
+	import { createTransition } from '$lib/transition';
+	import { interpolateColor, randInRange } from '$lib/utils';
+	import { Mesh, MeshStandardMaterial } from 'three';
 
-	export let entrance: Triplet;
-	export let exit: Triplet;
-	export let maze: MazeBlock[];
+	type MazeProps = { entrance: Triplet; exit: Triplet; maze: MazeBlock[]; children: Snippet };
 
-	let rigidBody: RapierRigidBody;
-	let introComplete = false;
+	// depends on maze creation
+	let mazeHeight = 3;
 
-	const moveUpIn = createTransition<Mesh>((ref) => {
+	let { entrance, exit, maze, children }: MazeProps = $props();
+
+	let config = getConfig();
+	let { store: gameState } = getGameState();
+	let introComplete = $state(false);
+	let rigidBody = $state<RapierRigidBody>();
+
+	let moveUpIn = createTransition<Mesh>((ref) => {
 		return {
 			tick(t) {
-				ref.position.setY(t * 4 - 4);
-
-				if (t === 1) {
-					ref.castShadow = true;
-				}
+				ref.position.setY((mazeHeight - mazeHeight * t) * -1);
 			},
-			easing: bounceInOut,
-			duration: randInRange(1200, 2000),
-			delay: randInRange(100, 200)
+			onEnd() {
+				ref.castShadow = true;
+			},
+			easing: 'bounceInOut',
+			duration: randInRange(80, 150),
+			delay: randInRange(0, 25)
 		};
 	});
 
-	const fadeIn = createTransition<MeshStandardMaterial>((ref) => {
-		const animateColor = interpolateColor($configStore.floorColor, $configStore.mazeColor);
+	let fadeIn = createTransition<MeshStandardMaterial>((ref) => {
+		const animateColor = interpolateColor(config.floorColor, config.mazeColor);
 
 		return {
 			tick(t) {
 				ref.color.set(animateColor(t));
-
-				if (t === 1) {
-					ref.color.set($configStore.mazeColor);
-					introComplete = true;
-				}
 			},
-			easing: quadIn,
-			duration: 1000,
-			delay: 700
+			onEnd() {
+				ref.color.set(config.mazeColor);
+				introComplete = true;
+			},
+			easing: 'quadIn',
+			duration: 80,
+			delay: 15
 		};
+	});
+
+	$effect(() => {
+		// reposition rigid body to match mesh
+		if (introComplete) {
+			let { x, z, y } = rigidBody!.translation();
+			rigidBody?.setTranslation(new Vector3(x, mazeHeight + y + 1, z), true);
+		}
 	});
 </script>
 
-<T.Group position={[-MAZE_POS_OFFSET, 1, -MAZE_POS_OFFSET]}>
-	{#if $gameStore.gameState !== 'idle'}
-		<RigidBody type="fixed" bind:rigidBody userData={{ name: 'maze' }} dominance={10}>
+<T.Group position={[-MAZE_POS_OFFSET, mazeHeight / 2, -MAZE_POS_OFFSET]}>
+	{#if gameState.status !== 'idle'}
+		<RigidBody
+			type="fixed"
+			bind:rigidBody
+			userData={{ name: 'maze' }}
+			dominance={10}
+			enabled={introComplete}
+		>
 			<AutoColliders shape={'cuboid'}>
 				{#each maze as element, ind}
 					<T.Mesh
 						scale={element.dimension}
-						position={[element.position[0], 0, element.position[2]]}
+						position={[element.position[0], -mazeHeight, element.position[2]]}
 						key={ind}
-						transition={moveUpIn}
+						oncreate={moveUpIn}
 					>
+						{console.log(element.dimension[1])}
 						<RoundedBoxGeometry />
 						<T.MeshStandardMaterial
-							transition={fadeIn}
-							color={introComplete ? $configStore.mazeColor : $configStore.floorColor}
+							color={introComplete ? config.mazeColor : config.floorColor}
 							flatShading
+							oncreate={fadeIn}
 						/>
 					</T.Mesh>
 				{/each}
@@ -75,16 +94,16 @@
 		</RigidBody>
 
 		<T.Group position={entrance}>
-			<Collider sensor shape="cuboid" args={[0.1, 3, 3]} on:sensorenter={gameStore.enterMaze} />
+			<Collider sensor shape="cuboid" args={[0.1, 3, 3]} onsensorenter={gameState.enterMaze} />
 		</T.Group>
 		<T.Group position={exit}>
-			<Collider sensor shape="cuboid" args={[0.1, 3, 3]} on:sensorenter={gameStore.exitMaze} />
+			<Collider sensor shape="cuboid" args={[0.1, 3, 3]} onsensorenter={gameState.exitMaze} />
 		</T.Group>
 	{/if}
 
-	<slot />
+	{@render children()}
 </T.Group>
 
-{#if $gameStore.gameState === 'idle'}
+{#if gameState.status === 'idle'}
 	<ControlsDemo />
 {/if}

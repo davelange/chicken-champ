@@ -1,7 +1,11 @@
 <script lang="ts">
-	export let type: 'light' | 'heavy';
+	type Props = {
+		type: 'light' | 'heavy';
+	};
 
-	$: label = type === 'light' ? 'Light and shaky' : 'Heavy and steady';
+	let { type }: Props = $props();
+
+	let label = $derived(type === 'light' ? 'Light and shaky' : 'Heavy and steady');
 </script>
 
 <label

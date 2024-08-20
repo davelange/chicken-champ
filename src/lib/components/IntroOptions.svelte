@@ -3,12 +3,11 @@
 	import { onMount } from 'svelte';
 	import { AvatarRadioButton } from '$lib/components';
 
-	let seedParam = $page.url.searchParams.get('seed');
-	let defaultSeed = seedParam || Date.now();
-	let animRX = 15;
-	$: isSeedRandom = !seedParam;
-
-	let interval: ReturnType<typeof setInterval>;
+	let seedParam = $state($page.url.searchParams.get('seed'));
+	let interval = $state<ReturnType<typeof setInterval>>();
+	let defaultSeed = $state(seedParam || Date.now());
+	let animRX = $state(15);
+	let isSeedRandom = $derived(!seedParam);
 
 	onMount(() => {
 		interval = setInterval(() => {

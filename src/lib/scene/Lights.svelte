@@ -1,8 +1,10 @@
 <script lang="ts">
-	import { configStore } from '$lib/config';
+	import { getConfig } from '$lib/config.svelte';
 	import { T } from '@threlte/core';
 	import { CameraHelper, DirectionalLight } from 'three';
-	import { DirectionalLightShadow } from 'three/src/lights/DirectionalLightShadow';
+	import { DirectionalLightShadow } from 'three/src/lights/DirectionalLightShadow.js';
+
+	let config = getConfig();
 
 	let light = new DirectionalLight();
 	let shadow = new DirectionalLightShadow();
@@ -22,8 +24,8 @@
 	const helperCamera = new CameraHelper(shadow.camera);
 </script>
 
-<T.DirectionalLight bind:light position={[3, 20, -4]} intensity={2} {shadow} castShadow />
-{#if $configStore.shadowLight}
+<T.DirectionalLight position={[3, 20, -4]} intensity={2} {shadow} castShadow {light} />
+{#if config.shadowLight}
 	<T is={helperCamera} />
 {/if}
 <T.DirectionalLight position={[-3, 20, 0]} intensity={1} />

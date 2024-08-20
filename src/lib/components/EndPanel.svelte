@@ -1,10 +1,14 @@
 <script lang="ts">
-	import { gameStore } from '$lib/game';
+	import { getGameState } from '$lib/game.svelte';
 
 	const padStr = (val: number) => val.toString().padStart(2, '');
 
-	$: finalTimeDate = new Date($gameStore.timeCompleted);
-	$: finalTimeStr = `${padStr(finalTimeDate.getMinutes())}:${padStr(finalTimeDate.getSeconds())}:${finalTimeDate.getMilliseconds()}`;
+	let { store: gameState } = getGameState();
+
+	let finalTimeDate = $derived(new Date(gameState.timeCompleted));
+	let finalTimeStr = $derived(
+		`${padStr(finalTimeDate.getMinutes())}:${padStr(finalTimeDate.getSeconds())}:${finalTimeDate.getMilliseconds()}`
+	);
 </script>
 
 <div
@@ -14,10 +18,10 @@
 	<p class="mb-4">Your time: {finalTimeStr}</p>
 
 	<div class="flex gap-4 justify-center">
-		<button class="underline" type="button" on:click={gameStore.restartMaze}>
+		<button class="underline" type="button" onclick={gameState.restartMaze}>
 			Try this maze again
 		</button>
-		<button class="underline" type="button" on:click={gameStore.goToNewGame}>
+		<button class="underline" type="button" onclick={gameState.goToNewGame}>
 			Try another maze
 		</button>
 	</div>

@@ -1,20 +1,6 @@
-import { Easing } from '$lib/easing';
+import type { TravelAnimationOptions } from '$lib/travel/types';
 
 type MotionOptions = { force: Partial<Axes<number>>; onEnd: () => void };
-
-const getResetMotion = ({ onEnd }: { onEnd: () => void }) => [
-	{
-		force: { y: 10 },
-		duration: 40,
-		easing: { y: Easing.OutQuint },
-		next: {
-			force: { y: -9 },
-			duration: 40,
-			easing: { y: Easing.OutCubic },
-			onEnd
-		}
-	}
-];
 
 export const FALL_THRESHOLD = 0.3;
 export const avatarConfigs = {
@@ -24,22 +10,21 @@ export const avatarConfigs = {
 		gravityScale: 4,
 		contactForceEventThreshold: 1,
 		restitution: 0.1,
-		getWalkMotion: ({ force, onEnd }: MotionOptions) => [
+		getWalkMotion: ({ force, onEnd }: MotionOptions): TravelAnimationOptions<'translate'>[] => [
 			{
 				name: 'walkXZ',
-				force,
+				by: force,
 				duration: 30,
-				easing: { x: Easing.OutCubic, z: Easing.OutCubic },
+				easing: { x: 'cubicOut', z: 'cubicOut' },
 				onEnd
 			},
 			{
 				name: 'walkY',
-				force: { y: 1.5 },
+				to: { y: 3.2 },
 				duration: 20,
-				easing: { y: Easing.OutCubic }
+				easing: 'cubicOut'
 			}
-		],
-		getResetMotion
+		]
 	},
 	light: {
 		moveBy: 4,
@@ -47,21 +32,20 @@ export const avatarConfigs = {
 		gravityScale: 4,
 		restitution: 0.2,
 		contactForceEventThreshold: 1,
-		getWalkMotion: ({ force, onEnd }: MotionOptions) => [
+		getWalkMotion: ({ force, onEnd }: MotionOptions): TravelAnimationOptions<'translate'>[] => [
 			{
 				name: 'walkXZ',
-				force,
+				by: force,
 				duration: 20,
-				easing: { x: Easing.OutSine, z: Easing.OutSine },
+				easing: 'sineOut',
 				onEnd
 			},
 			{
 				name: 'walkY',
-				force: { y: 1.5 },
+				to: { y: 3.2 },
 				duration: 12,
-				easing: { y: Easing.OutCirc }
+				easing: 'circOut'
 			}
-		],
-		getResetMotion
+		]
 	}
 };

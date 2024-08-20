@@ -18,7 +18,7 @@ const state: SwipeState = {
 	endPoint: undefined
 };
 
-const { on, off, publish } = pubs(['swipe']);
+const { managedSubscriber, publish } = pubs(['swipe']);
 
 function getDirection() {
 	if (state.startPoint === undefined || state.endPoint === undefined) {
@@ -97,7 +97,7 @@ function destroy() {
 
 export const swipe = {
 	init,
-	destroy,
-	on,
-	off
+	destroy
 };
+
+export const onSwipe = () => managedSubscriber();

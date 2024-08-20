@@ -18,7 +18,7 @@ const state: KeyQState = {
 	lockMap: {}
 };
 
-const { publish, on, off } = pubs(['keyDown', 'keyUp']);
+const { publish, managedSubscriber } = pubs(['keyDown', 'keyUp']);
 
 function add(key: PossibleKey) {
 	if (state.lockMap[key]) {
@@ -82,7 +82,7 @@ function getKeyId(event: KeyboardEvent): PossibleKey {
 
 export const keyq = {
 	init,
-	destroy,
-	on,
-	off
+	destroy
 };
+
+export const onKey = () => managedSubscriber();

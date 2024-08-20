@@ -2,7 +2,7 @@
 	import { Text } from '@threlte/extras';
 	import { FULL_ROTATION } from '$lib/utils';
 
-	export let text: string;
+	let { text }: { text: string } = $props();
 </script>
 
 <Text

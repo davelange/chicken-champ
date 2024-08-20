@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { configStore } from '$lib/config';
+	import { getConfig } from '$lib/config.svelte';
 	import { T, useTask } from '@threlte/core';
 	import { RoundedBoxGeometry, Text } from '@threlte/extras';
 	import { KeyText } from '$lib/scene';
 	import { FULL_ROTATION, isMobile } from '$lib/utils';
 	import Countdown from './Countdown.svelte';
+
+	let config = getConfig();
 
 	const mobile = isMobile();
 
@@ -56,7 +58,7 @@
 		<Text
 			text={mobile ? 'Swipe to move' : 'Move around'}
 			position={[-18, 1.2, 0]}
-			color={$configStore.mazeColor}
+			color={config.mazeColor}
 			fontSize={3}
 			rotation={[-FULL_ROTATION / 4, 0, FULL_ROTATION / 4]}
 			anchorX="center"
@@ -103,7 +105,7 @@
 			<Text
 				text="Reset"
 				position={[-18, 1.2, 0]}
-				color={$configStore.mazeColor}
+				color={config.mazeColor}
 				fontSize={3}
 				rotation={[-FULL_ROTATION / 4, 0, FULL_ROTATION / 4]}
 				anchorX="center"

@@ -1,17 +1,20 @@
 <script lang="ts">
-	import { configStore } from '$lib/config';
-	import { gameStore } from '$lib/game';
+	import { getConfig } from '$lib/config.svelte';
+	import { getGameState } from '$lib/game.svelte';
 	import { FULL_ROTATION } from '$lib/utils';
 	import { Text } from '@threlte/extras';
 	import { onMount } from 'svelte';
 
-	let time = 3;
-	let timeout: ReturnType<typeof setTimeout>;
-	export let onEnd: () => void;
+	let config = getConfig();
+	let { store: gameState } = getGameState();
+
+	let time = $state(3);
+	let timeout = $state<ReturnType<typeof setTimeout>>();
+	let { onEnd }: { onEnd: () => void } = $props();
 
 	function runCountdown() {
 		if (time === 1) {
-			gameStore.countdownEnded();
+			gameState.endCountdown();
 			clearTimeout(timeout);
 			return;
 		}
@@ -37,7 +40,7 @@
 	<Text
 		text={time.toString()}
 		position={[-3, 12, -32]}
-		color={$configStore.mazeColor}
+		color={config.mazeColor}
 		fontSize={10}
 		rotation={[0, -FULL_ROTATION * 2, 0]}
 		anchorX="center"

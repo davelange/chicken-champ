@@ -3,23 +3,24 @@
 	import { useGltf } from '@threlte/extras';
 	import type { Mesh } from 'three';
 
-	export let physicalState: AvatarPhysicalState;
+	type AvatarModelProps = { physicalState: AvatarPhysicalState };
 
-	let mesh: Mesh;
+	let { physicalState }: AvatarModelProps = $props();
+
+	let mesh = $state<Mesh>();
 	let gltf = useGltf('/assets/chicken/scene.gltf');
 	let FULL_ROTATION = Math.PI * 2;
 	let rotationY = FULL_ROTATION / 4;
 
-	$: yScale = physicalState === 'crouch' ? 1.3 : 1.5;
-
-	$: if (mesh) {
-		mesh.geometry.center();
-	}
+	let yScale = $derived(physicalState === 'crouch' ? 1.3 : 1.5);
 </script>
 
 {#if $gltf}
 	<T.Group scale={[1, yScale, 1]} position={[0, -1.9, 0]}>
 		<T.Mesh
+			on:create={({ ref }) => {
+				ref.geometry.center();
+			}}
 			ref={mesh}
 			castShadow
 			position={[0.4, 0.75, 0]}

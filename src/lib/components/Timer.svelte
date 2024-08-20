@@ -1,11 +1,18 @@
 <script lang="ts">
-	import { configStore } from '$lib/config';
-	import { gameStore } from '$lib/game';
-	import { onMount } from 'svelte';
+	import { getConfig } from '$lib/config.svelte';
+	import { getGameState } from '$lib/game.svelte';
+	import { onDestroy } from 'svelte';
 
-	let startTime: Date = new Date();
-	let interval: ReturnType<typeof setInterval>;
-	let timeStr = '';
+	let config = getConfig();
+	let gameState = getGameState();
+
+	let startTime = $state(new Date());
+	let interval = $state<ReturnType<typeof setInterval>>();
+	let timeStr = $state('');
+
+	gameState.on('inProgress', start);
+	gameState.on('restartMaze', start);
+	gameState.on('done', () => clearInterval(interval));
 
 	function getTimeDiffDesc() {
 		const padStr = (val: number) => val.toString().padStart(2, '');
@@ -21,24 +28,18 @@
 	}
 
 	function start() {
-		startTime = new Date($gameStore.entryTime);
+		startTime = new Date(gameState.store.entryTime);
 		interval = setInterval(getTimeDiffDesc, 100);
 	}
 
-	onMount(() => {
-		gameStore.on('inProgress', start, 'timer');
-		gameStore.on('restartMaze', start, 'timer');
-		gameStore.on('done', () => clearInterval(interval), 'timer');
-
-		return () => {
-			gameStore.off('timer');
-		};
+	onDestroy(() => {
+		gameState.cleanup();
 	});
 </script>
 
 <div
 	class="absolute top-4 left-4 z-10 text-white font-bold text-xl"
-	style="color: {$configStore.mazeColor}"
+	style="color: {config.mazeColor}"
 >
 	{timeStr}
 </div>

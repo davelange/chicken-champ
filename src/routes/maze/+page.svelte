@@ -1,26 +1,26 @@
 <script lang="ts">
 	import { Scene } from '$lib/scene';
 	import { EndPanel, Config, Timer, ResetHint } from '$lib/components';
-	import { gameStore } from '$lib/game';
-	import { onMount } from 'svelte';
 	import { Canvas } from '@threlte/core';
-	import { avatarStore } from '$lib/avatar';
+	import { initAvatarState } from '$lib/avatar.svelte';
+	import { initConfig } from '$lib/config.svelte';
+	import { initGameState } from '$lib/game.svelte';
 
-	onMount(() => {
-		gameStore.init();
-	});
+	initConfig();
+	let avatarState = initAvatarState();
+	let gameState = initGameState();
 </script>
 
 <Canvas>
-	{#if $gameStore.seed}
-		<Scene seed={$gameStore.seed} />
+	{#if gameState.seed}
+		<Scene seed={gameState.seed} />
 	{/if}
 </Canvas>
 <Timer />
 <Config />
 
-{#if $gameStore.gameState === 'done'}
+{#if gameState.status === 'done'}
 	<EndPanel />
-{:else if $avatarStore.fallen}
+{:else if avatarState.fallen}
 	<ResetHint />
 {/if}

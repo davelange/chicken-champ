@@ -1,8 +1,10 @@
 <script lang="ts">
-	import { configStore } from '$lib/config';
-	import { gameStore } from '$lib/game';
+	import { getConfig } from '$lib/config.svelte';
+	import { getGameState } from '$lib/game.svelte';
 
-	let open = false;
+	let config = getConfig();
+	let { store: gameState } = getGameState();
+	let open = $state(false);
 
 	function handleKeyUp(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
@@ -11,50 +13,50 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="root"
-	on:keyup={handleKeyUp}
-	style="color: {$configStore.mazeColor}; background: {$configStore.floorColor}"
+	onkeyup={handleKeyUp}
+	style="color: {config.mazeColor}; background: {config.floorColor}"
 >
-	<button type="button" class="toggle-btn" on:click={() => (open = !open)}>
+	<button type="button" class="toggle-btn" onclick={() => (open = !open)}>
 		{open ? 'Close' : 'Settings'}
 	</button>
 	{#if open}
 		<form class="form">
 			<label>
-				<input type="checkbox" bind:checked={$configStore.worldDebug} />
+				<input type="checkbox" bind:checked={config.worldDebug} />
 				Physics world debug
 			</label>
 			<label>
-				<input type="checkbox" bind:checked={$configStore.axes} />
+				<input type="checkbox" bind:checked={config.axes} />
 				Show axes
 			</label>
 			<label>
-				<input type="checkbox" bind:checked={$configStore.floorGrid} />
+				<input type="checkbox" bind:checked={config.floorGrid} />
 				Show floor grid
 			</label>
 			<label>
-				<input type="checkbox" bind:checked={$configStore.verticalView} />
+				<input type="checkbox" bind:checked={config.verticalView} />
 				Vertical camera view
 			</label>
 			<label>
-				<input type="checkbox" bind:checked={$configStore.orbitControls} />
+				<input type="checkbox" bind:checked={config.orbitControls} />
 				Allow orbit controls
 			</label>
 			<label>
-				<input type="checkbox" bind:checked={$configStore.shadowLight} />
+				<input type="checkbox" bind:checked={config.shadowLight} />
 				Show shadow light guide
 			</label>
 			<label>
-				<input type="color" bind:value={$configStore.mazeColor} />
+				<input type="color" bind:value={config.mazeColor} />
 				Maze color
 			</label>
 			<label>
-				<input type="color" bind:value={$configStore.floorColor} />
+				<input type="color" bind:value={config.floorColor} />
 				Floor color
 			</label>
-			<button type="button" on:click={gameStore.restartMaze}> Restart </button>
+			<button type="button" onclick={() => gameState.restartMaze()}> Restart </button>
 		</form>
 	{/if}
 </div>
