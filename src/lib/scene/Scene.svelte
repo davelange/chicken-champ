@@ -8,10 +8,12 @@
 	import { createMaze } from '$lib/amaze';
 	import { Avatar, Floor, Lights, OrthoCamera, Maze } from '$lib/scene';
 	import { getConfig } from '$lib/config.svelte';
+	import { getGameState } from '$lib/game.svelte';
 
 	interactivity();
 
 	let config = getConfig();
+	let { store: gameState } = getGameState();
 
 	let { seed }: { seed: string } = $props();
 	let { maze, entrance, exit } = $derived.by(() =>
@@ -22,7 +24,6 @@
 			seed
 		})
 	);
-	//console.log(entrance);
 	let avatarStartPoint = $derived<Triplet>([entrance[0] - 8, entrance[1], entrance[2]]);
 
 	// Setup key and touch events
@@ -41,9 +42,12 @@
 	<OrthoCamera {maze} />
 	<Lights />
 
-	<Maze {maze} {entrance} {exit}>
-		<Avatar initialPosition={avatarStartPoint} />
-	</Maze>
+	{#key gameState.seed}
+		<Maze {maze} {entrance} {exit}>
+			<Avatar initialPosition={avatarStartPoint} />
+		</Maze>
+	{/key}
+
 	<Floor />
 	{#if config.worldDebug}
 		<Debug color="red" />

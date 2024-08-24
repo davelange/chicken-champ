@@ -18,10 +18,10 @@
 	<p class="mb-4">Your time: {finalTimeStr}</p>
 
 	<div class="flex gap-4 justify-center">
-		<button class="underline" type="button" onclick={gameState.restartMaze}>
+		<button class="underline" type="button" onclick={() => gameState.restartMaze()}>
 			Try this maze again
 		</button>
-		<button class="underline" type="button" onclick={gameState.goToNewGame}>
+		<button class="underline" type="button" onclick={() => gameState.goToNewGame()}>
 			Try another maze
 		</button>
 	</div>

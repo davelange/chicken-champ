@@ -10,7 +10,7 @@
 	let config = getConfig();
 	let { maze }: { maze: MazeBlock[] } = $props();
 	let camera = $state<OrthographicCamera>();
-	let maxZoom = $state(15);
+	let maxZoom = 15;
 	let view = $state<Record<string, Triplet>>({
 		ortho: [5, 5.5, 5],
 		vertical: [0, 5.5, 0]
@@ -52,8 +52,8 @@
 	fov={100}
 	near={-2000}
 	zoom={10}
-	on:create={({ ref }) => {
-		ref.lookAt(0, 0, 0);
+	oncreate={() => {
+		camera?.lookAt(0, 0, 0);
 		zoomToFit();
 	}}
 >

@@ -14,11 +14,7 @@
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div
-	class="root"
-	onkeyup={handleKeyUp}
-	style="color: {config.mazeColor}; background: {config.floorColor}"
->
+<div class="root" onkeyup={handleKeyUp} style="color: #333; background: #eee">
 	<button type="button" class="toggle-btn" onclick={() => (open = !open)}>
 		{open ? 'Close' : 'Settings'}
 	</button>
@@ -56,7 +52,7 @@
 				<input type="color" bind:value={config.floorColor} />
 				Floor color
 			</label>
-			<button type="button" onclick={() => gameState.restartMaze()}> Restart </button>
+			<button type="button" onclick={() => gameState.restartMaze()}> Restart game</button>
 		</form>
 	{/if}
 </div>
@@ -69,6 +65,9 @@
 		max-width: 300px;
 		border-radius: 0.5rem;
 		z-index: 2;
+		padding: 10px;
+		color: #333;
+		background-color: #eee;
 	}
 	.toggle-btn {
 		background: none;
