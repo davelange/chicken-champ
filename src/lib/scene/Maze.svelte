@@ -33,7 +33,7 @@
 				ref.castShadow = true;
 			},
 			easing: 'bounceInOut',
-			duration: randInRange(80, 150),
+			duration: randInRange(80, 190),
 			delay: randInRange(0, 25)
 		};
 	});
@@ -50,7 +50,7 @@
 				introComplete = true;
 			},
 			easing: 'quadIn',
-			duration: 80,
+			duration: 110,
 			delay: 15
 		};
 	});
@@ -81,7 +81,6 @@
 						key={ind}
 						oncreate={moveUpIn}
 					>
-						{console.log(element.dimension[1])}
 						<RoundedBoxGeometry />
 						<T.MeshStandardMaterial
 							color={introComplete ? config.mazeColor : config.floorColor}
@@ -94,10 +93,20 @@
 		</RigidBody>
 
 		<T.Group position={entrance}>
-			<Collider sensor shape="cuboid" args={[0.1, 3, 3]} onsensorenter={gameState.enterMaze} />
+			<Collider
+				sensor
+				shape="cuboid"
+				args={[0.1, 3, 3]}
+				onsensorenter={({ targetRigidBody }) => gameState.enterMaze({ targetRigidBody })}
+			/>
 		</T.Group>
 		<T.Group position={exit}>
-			<Collider sensor shape="cuboid" args={[0.1, 3, 3]} onsensorenter={gameState.exitMaze} />
+			<Collider
+				sensor
+				shape="cuboid"
+				args={[0.1, 3, 3]}
+				onsensorenter={({ targetRigidBody }) => gameState.exitMaze({ targetRigidBody })}
+			/>
 		</T.Group>
 	{/if}
 
