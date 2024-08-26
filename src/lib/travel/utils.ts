@@ -60,9 +60,11 @@ export function getTargetRotation(options: TravelAnimationOptions<'rotate'>, cur
 		new Euler(options?.by?.x, options?.by?.y, options?.by?.z, 'XYZ')
 	);
 
-	return new Quaternion(x, y, z, w).multiply(targetEuler);
+	return targetEuler.multiply(new Quaternion(x, y, z, w));
 }
 
 export function getRotationStep(options: TravelAnimationOptions<'rotate'>) {
-	return Math.max(...Object.values(options?.to || options?.by || {}));
+	return Math.max(
+		...Object.values(options?.to || options?.by || {}).map((v) => (v < 0 ? v * -1 : v))
+	);
 }

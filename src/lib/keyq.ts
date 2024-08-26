@@ -20,6 +20,10 @@ const state: KeyQState = {
 
 const { publish, managedSubscriber } = pubs(['keyDown', 'keyUp']);
 
+export function hasKeys(map: KeyMap, relevant: PossibleKey[]) {
+	return Object.keys(map).some((val) => relevant.includes(val as PossibleKey));
+}
+
 function add(key: PossibleKey) {
 	if (state.lockMap[key]) {
 		return;

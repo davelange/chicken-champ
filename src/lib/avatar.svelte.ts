@@ -8,7 +8,6 @@ const { managedSubscriber, publish } = pubs(['reset']);
 
 class AvatarState {
 	fallen = $state(false);
-	physicalState: AvatarPhysicalState = $state('idle');
 	lastSafePosition = $state(new RapierVector3(0, 0, 0));
 
 	constructor() {

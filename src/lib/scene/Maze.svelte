@@ -49,9 +49,9 @@
 				ref.color.set(config.mazeColor);
 				introComplete = true;
 			},
-			easing: 'quadIn',
-			duration: 110,
-			delay: 15
+			easing: 'quartIn',
+			duration: 80,
+			delay: 80
 		};
 	});
 

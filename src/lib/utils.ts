@@ -1,6 +1,7 @@
-import { Quaternion, Vector3, type Vector } from '@dimforge/rapier3d-compat';
+import { Quaternion, Vector3, type Rotation, type Vector } from '@dimforge/rapier3d-compat';
 import type { Color } from 'three';
 import type { KeyMap } from './keyq';
+import { degToRad } from 'three/src/math/MathUtils.js';
 
 export function getFromUrl(keys: string[], url: URL) {
 	return keys.reduce(
@@ -37,19 +38,17 @@ export function getAdjustedRotation(currentRot: Quaternion, target: Orientation)
 	return base;
 }
 
-export function checkOrientation(
-	data: Axes<number>,
-	axis: keyof Axes<number>,
-	compare: 'pos' | 'neg'
-) {
-	let sum = 0;
-	const axisCompare = compare === 'neg' ? data[axis] < 0 : data[axis] > 0;
-
-	for (const k in data) {
-		if (k !== axis) sum += data[k as keyof typeof data];
+export function getOrientation(data: Axes<number>): Orientation {
+	if (data.x < 0) {
+		return 'xNeg';
 	}
-
-	return sum === 0 && axisCompare;
+	if (data.x > 0) {
+		return 'xPos';
+	}
+	if (data.z < 0) {
+		return 'zNeg';
+	}
+	return 'zPos';
 }
 
 export function debounce(fn: (args: any) => void, delay: number) {
@@ -157,6 +156,52 @@ export function getForceFromKey(key: KeyMap, moveBy: number) {
 	return direction;
 }
 
+export function getForceFromKeymap(key: KeyMap, moveBy: number) {
+	let direction = { x: 0, y: 0, z: 0 };
+
+	if (key.w) {
+		direction.z -= moveBy;
+	} else if (key.a) {
+		direction.x -= moveBy;
+	} else if (key.d) {
+		direction.x += moveBy;
+	} else if (key.s) {
+		direction.z += moveBy;
+	}
+
+	return direction;
+}
+
 export function isMobile() {
 	return window.innerWidth < 540;
 }
+
+export const jumpSpin = {
+	xPos: degToRad(0),
+	zPos: degToRad(90),
+	xNeg: degToRad(-180),
+	zNeg: degToRad(-90)
+} as const;
+
+export const jumpRotation = {
+	xPos: degToRad(-180),
+	zPos: degToRad(90),
+	xNeg: degToRad(180),
+	zNeg: degToRad(-90)
+} as const;
+
+export const getJumpConfig = (orientation: Orientation): Partial<Axes<number>> => {
+	if (orientation === 'xPos') {
+		return { z: degToRad(-180) };
+	}
+
+	if (orientation === 'xNeg') {
+		return { z: degToRad(180) };
+	}
+
+	if (orientation === 'zPos') {
+		return { x: degToRad(180) };
+	}
+
+	return { x: degToRad(-180) };
+};
