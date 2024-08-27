@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { getAvatarState } from '$lib/avatar.svelte';
 	import { getConfig } from '$lib/config.svelte';
 	import { getGameState } from '$lib/game.svelte';
 	import { onDestroy } from 'svelte';
 
 	let config = getConfig();
 	let gameState = getGameState();
+	let { store: avatarState } = getAvatarState();
 
 	let startTime = $state(new Date());
 	let interval = $state<ReturnType<typeof setInterval>>();
@@ -41,5 +43,9 @@
 	class="absolute top-4 left-4 z-10 text-white font-bold text-xl"
 	style="color: {config.mazeColor}"
 >
-	{timeStr}
+	<span>{timeStr}</span>
+	<br />
+	{#if gameState.store.status === 'inProgress'}
+		<span>{avatarState.jumpsRemaining} jumps left</span>
+	{/if}
 </div>

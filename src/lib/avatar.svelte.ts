@@ -1,4 +1,3 @@
-import { writable } from 'svelte/store';
 import { Vector3 as RapierVector3 } from '@dimforge/rapier3d-compat';
 import { pubs } from './pubs';
 import { getContext, setContext } from 'svelte';
@@ -9,10 +8,12 @@ const { managedSubscriber, publish } = pubs(['reset']);
 class AvatarState {
 	fallen = $state(false);
 	lastSafePosition = $state(new RapierVector3(0, 0, 0));
+	jumpsRemaining = $state(3);
 
 	constructor() {
 		getGameState().on('restartMaze', () => {
 			this.fallen = false;
+			this.jumpsRemaining = 3;
 		});
 	}
 

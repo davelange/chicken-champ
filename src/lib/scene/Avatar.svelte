@@ -76,7 +76,9 @@
 	}
 
 	function applyJumpMotion(key: KeyMap) {
-		if (collisionLock) return;
+		if (collisionLock || !avatarState.jumpsRemaining) return;
+
+		avatarState.jumpsRemaining--;
 
 		rigidBody?.setGravityScale(0, true);
 		rigidBody?.collider(0).setEnabled(false);
@@ -178,15 +180,11 @@
 		manifold: TempContactManifold;
 	}) {
 		if (isElement(targetRigidBody, 'maze')) {
-			console.log(manifold.solverContactPoint(0));
-			console.log('HIT MAZE IN JUMP');
-
-			// Reset avatar physics
-			rigidBody?.setGravityScale(config.gravityScale, true);
-			travel.stopAll();
-
 			// Detect if standing on maze
 			if (rigidBody!.translation().y > 5) {
+				// Reset avatar physics
+				rigidBody?.setGravityScale(config.gravityScale, true);
+				travel.stopAll();
 				avatarState.fallen = true;
 			}
 		}
