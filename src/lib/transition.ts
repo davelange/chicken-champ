@@ -5,7 +5,7 @@ import { getEasing } from './travel/utils';
 type Callback<T> = (ref: T) => {
 	easing: Easing;
 	duration: number;
-	delay: number;
+	delay?: number;
 	tick: (t: number) => void;
 	onEnd: () => void;
 };
@@ -17,7 +17,7 @@ export const createTransition = <T>(fn: Callback<T>) => {
 		let acc = 0;
 
 		const { stop } = useTask(() => {
-			if (options.delay > 0) {
+			if (options.delay && options.delay > 0) {
 				options.delay--;
 			} else if (currentFrame <= options.duration) {
 				let ease = getEasing(options.easing, currentFrame / options.duration, acc);

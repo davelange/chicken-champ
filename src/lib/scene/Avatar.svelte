@@ -3,7 +3,7 @@
 	import {
 		type RigidBody as RapierRigidBody,
 		TempContactManifold,
-		Vector3
+		type Vector
 	} from '@dimforge/rapier3d-compat';
 	import { Collider, RigidBody } from '@threlte/rapier';
 	import { Quaternion } from 'three';
@@ -22,7 +22,6 @@
 	import { avatarConfigs } from '$lib/config/avatar';
 	import { onSwipe } from '$lib/swipe';
 	import { getGameState } from '$lib/game.svelte';
-	import { MAZE_POS_OFFSET } from '$lib/config/maze';
 	import { onDestroy } from 'svelte';
 	import { getAvatarState } from '$lib/avatar.svelte';
 	import { Travel } from '$lib/travel';
@@ -41,12 +40,15 @@
 	let collisionLock = $state(false);
 	let collisionLockTimeout: ReturnType<typeof setTimeout>;
 
+	let startPoint = $state<Vector>();
+
 	let keyq = onKey();
 	let swipe = onSwipe();
 	let travel = new Travel();
 
 	function init() {
 		travel.setBody(rigidBody!);
+		startPoint = rigidBody?.worldCom();
 		// init last safe position
 		avatarState.lastSafePosition = rigidBody!.worldCom();
 	}
@@ -117,14 +119,8 @@
 	}
 
 	function onRestartMaze() {
-		rigidBody!.setTranslation(
-			new Vector3(
-				initialPosition[0] - MAZE_POS_OFFSET,
-				rigidBody!.translation().y,
-				initialPosition[2] - MAZE_POS_OFFSET
-			),
-			false
-		);
+		if (!rigidBody || !startPoint) return;
+		rigidBody.setTranslation(startPoint, true);
 		rigidBody!.setRotation(quaternion.xPos, true);
 	}
 

@@ -6,11 +6,10 @@
 	import { RoundedBoxGeometry } from '@threlte/extras';
 	import { getGameState } from '$lib/game.svelte';
 	import { ControlsDemo } from '$lib/scene';
-	import { MAZE_POS_OFFSET } from '$lib/config/maze';
 	import type { Snippet } from 'svelte';
 	import { createTransition } from '$lib/transition';
 	import { interpolateColor, randInRange } from '$lib/utils';
-	import { Mesh, MeshStandardMaterial } from 'three';
+	import { Group, Mesh, MeshStandardMaterial } from 'three';
 
 	type MazeProps = { entrance: Triplet; exit: Triplet; maze: MazeBlock[]; children: Snippet };
 
@@ -23,6 +22,7 @@
 	let { store: gameState } = getGameState();
 	let introComplete = $state(false);
 	let rigidBody = $state<RapierRigidBody>();
+	let mazePosOffset = $state(0);
 
 	let moveUpIn = createTransition<Mesh>((ref) => {
 		return {
@@ -32,9 +32,8 @@
 			onEnd() {
 				ref.castShadow = true;
 			},
-			easing: 'bounceInOut',
-			duration: randInRange(80, 190),
-			delay: randInRange(0, 25)
+			easing: 'expoIn',
+			duration: 100
 		};
 	});
 
@@ -49,9 +48,8 @@
 				ref.color.set(config.mazeColor);
 				introComplete = true;
 			},
-			easing: 'quartIn',
-			duration: 80,
-			delay: 80
+			easing: 'expoIn',
+			duration: 100
 		};
 	});
 
@@ -62,9 +60,19 @@
 			rigidBody?.setTranslation(new Vector3(x, mazeHeight + y + 1, z), true);
 		}
 	});
+
+	let group = $state<Group>();
+
+	function calcMazeOffset() {
+		mazePosOffset = ((maze.at(-1)!.position[2] - 4) / 2) * -1;
+	}
+
+	$effect(() => {
+		calcMazeOffset();
+	});
 </script>
 
-<T.Group position={[-MAZE_POS_OFFSET, mazeHeight / 2, -MAZE_POS_OFFSET]}>
+<T.Group bind:ref={group} position={[mazePosOffset, mazeHeight / 2, mazePosOffset]}>
 	{#if gameState.status !== 'idle'}
 		<RigidBody
 			type="fixed"

@@ -98,6 +98,20 @@
 				<T.MeshStandardMaterial color={BTN_COLOR} />
 			</T.Mesh>
 		</T.Group>
+
+		<T.Group
+			position={mobile ? [BTN_WIDTH + BTN_OFFSET, y, 0] : [BTN_WIDTH + BTN_OFFSET * 3, y, 0]}
+		>
+			<KeyText text={'Space'} />
+			<T.Mesh
+				scale={[BTN_WIDTH, BTN_HEIGHT, BTN_WIDTH * 4 - BTN_OFFSET * 4]}
+				castShadow
+				receiveShadow
+			>
+				<RoundedBoxGeometry radius={BTN_RADIUS} />
+				<T.MeshStandardMaterial color={BTN_COLOR} />
+			</T.Mesh>
+		</T.Group>
 	</T.Group>
 
 	{#if !mobile}

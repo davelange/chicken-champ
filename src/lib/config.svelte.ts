@@ -8,8 +8,8 @@ export class Config {
 		shadowLight: false,
 		floorGrid: false,
 		verticalView: false,
-		floorColor: '#262626',
-		mazeColor: '#04a8b4'
+		floorColor: '#dedede',
+		mazeColor: '#333dc7'
 	});
 
 	constructor() {

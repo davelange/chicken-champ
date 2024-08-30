@@ -39,7 +39,7 @@
 </script>
 
 <World>
-	<OrthoCamera {maze} />
+	<OrthoCamera />
 	<Lights />
 
 	{#key gameState.seed}

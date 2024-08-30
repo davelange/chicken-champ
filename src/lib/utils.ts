@@ -140,22 +140,6 @@ export function interpolateColor(
 	};
 }
 
-export function getForceFromKey(key: KeyMap, moveBy: number) {
-	let direction = { x: 0, y: 0, z: 0 };
-
-	if (key.w) {
-		direction.z -= moveBy;
-	} else if (key.a) {
-		direction.x -= moveBy;
-	} else if (key.d) {
-		direction.x += moveBy;
-	} else if (key.s) {
-		direction.z += moveBy;
-	}
-
-	return direction;
-}
-
 export function getForceFromKeymap(key: KeyMap, moveBy: number) {
 	let direction = { x: 0, y: 0, z: 0 };
 
@@ -176,19 +160,17 @@ export function isMobile() {
 	return window.innerWidth < 540;
 }
 
-export const jumpSpin = {
-	xPos: degToRad(0),
-	zPos: degToRad(90),
-	xNeg: degToRad(-180),
-	zNeg: degToRad(-90)
-} as const;
+export function getZoom() {
+	if (window.innerWidth < 600) {
+		return 3.5;
+	}
 
-export const jumpRotation = {
-	xPos: degToRad(-180),
-	zPos: degToRad(90),
-	xNeg: degToRad(180),
-	zNeg: degToRad(-90)
-} as const;
+	if (window.innerWidth <= 1540) {
+		return 9;
+	}
+
+	return 12;
+}
 
 export const getJumpConfig = (orientation: Orientation): Partial<Axes<number>> => {
 	if (orientation === 'xPos') {

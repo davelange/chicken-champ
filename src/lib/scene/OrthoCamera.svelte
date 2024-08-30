@@ -1,39 +1,36 @@
 <script lang="ts">
-	import { T } from '@threlte/core';
+	import { T, useThrelte } from '@threlte/core';
 	import { OrbitControls } from '@threlte/extras';
-	import { onMount } from 'svelte';
-	import type { OrthographicCamera } from 'three';
+	import { OrthographicCamera } from 'three';
 	import { getConfig } from '$lib/config.svelte';
-	import { debounce } from '$lib/utils';
+	import { debounce, getZoom } from '$lib/utils';
 	import { degToRad } from 'three/src/math/MathUtils.js';
 
 	let config = getConfig();
-	let { maze }: { maze: MazeBlock[] } = $props();
+	const scene = useThrelte();
+
 	let camera = $state<OrthographicCamera>();
-	let maxZoom = 15;
+	let distance = 500;
 	let view = $state<Record<string, Triplet>>({
-		ortho: [5, 5.5, 5],
+		ortho: [distance, distance * 1.05, distance],
 		vertical: [0, 5.5, 0]
 	});
-
-	let mazeEdge = $derived(Math.max(...maze.map((item) => item.position[0])));
 
 	function zoomToFit() {
 		if (!camera) return;
 
-		const newZoom = camera.right / mazeEdge;
+		// For some reason, renderer height is not adjusting on window resize
+		scene.size.current.height = window.innerHeight;
+		scene.size.current.width = window.innerWidth;
+		scene.renderer.setSize(window.innerWidth, window.innerHeight);
+		scene.renderer.setPixelRatio(window.devicePixelRatio);
 
-		camera.zoom = Math.min(newZoom, maxZoom);
+		// Adjust zoom
+		camera.zoom = getZoom();
 		camera.updateProjectionMatrix();
 	}
 
 	const debouncedZoomToFit = debounce(zoomToFit, 500);
-
-	onMount(() => {
-		window.addEventListener('resize', debouncedZoomToFit);
-
-		return () => window.removeEventListener('resize', debouncedZoomToFit);
-	});
 
 	// force update when view type changes
 	$effect(() => {
@@ -45,13 +42,11 @@
 	});
 </script>
 
+<svelte:window onresize={debouncedZoomToFit} />
 <T.OrthographicCamera
 	bind:ref={camera}
 	makeDefault
 	position={view.ortho}
-	fov={100}
-	near={-2000}
-	zoom={10}
 	oncreate={() => {
 		camera?.lookAt(0, 0, 0);
 		zoomToFit();
