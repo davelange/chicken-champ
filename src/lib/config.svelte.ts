@@ -17,12 +17,12 @@ export class Config {
 
 		$effect(() => {
 			let state = JSON.stringify(this.values);
-			localStorage.setItem('config', state);
+			localStorage.setItem('cc_config', state);
 		});
 	}
 
 	loadFromLocal() {
-		const local = localStorage.getItem('config');
+		const local = localStorage.getItem('cc_config');
 
 		if (local) {
 			this.values = JSON.parse(local) as Config['values'];

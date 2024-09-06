@@ -32,8 +32,9 @@
 			onEnd() {
 				ref.castShadow = true;
 			},
-			easing: 'expoIn',
-			duration: 100
+			easing: 'bounceOut',
+			duration: randInRange(80, 190),
+			delay: randInRange(0, 25)
 		};
 	});
 
@@ -48,8 +49,9 @@
 				ref.color.set(config.mazeColor);
 				introComplete = true;
 			},
-			easing: 'expoIn',
-			duration: 100
+			easing: 'quadIn',
+			duration: 110,
+			delay: 15
 		};
 	});
 

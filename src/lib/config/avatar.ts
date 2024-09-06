@@ -1,5 +1,4 @@
 import type { Travel } from '$lib/travel';
-import { degToRad } from 'three/src/math/MathUtils.js';
 
 type MotionOptions = { force: Axes<number>; travel: Travel; onEnd?: () => void };
 let F = 1;
@@ -80,9 +79,9 @@ export const avatarConfigs = {
 	},
 	light: {
 		moveBy: 4,
-		angularDamping: 0.3,
+		angularDamping: 0.2,
 		gravityScale: 4,
-		restitution: 0.2,
+		restitution: 0.5,
 		contactForceEventThreshold: 0.1,
 
 		walk({ force, travel, onEnd }: MotionOptions) {

@@ -24,6 +24,6 @@
 		cellColor="red"
 		cellSize={4}
 		sectionSize={3}
-		sectionThickness={0}
+		sectionThickness={1}
 	/>
 {/if}
