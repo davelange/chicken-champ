@@ -59,10 +59,12 @@ function remove(key: PossibleKey) {
 }
 
 function handleKeyDown(event: KeyboardEvent) {
+	console.log(event);
 	add(getKeyId(event));
 }
 
 function handleKeyUp(event: KeyboardEvent) {
+	console.log(event);
 	remove(getKeyId(event));
 }
 
