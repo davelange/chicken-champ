@@ -16,7 +16,7 @@ const { publish, managedSubscriber } = pubs(['inProgress', 'done', 'restartMaze'
 class GameState {
 	status = $state<GameStateStatus>('idle');
 	inMaze = $state(false);
-	moveAllowed = $state(true);
+	moveAllowed = $state(false);
 	avatarType = $state<AvatarType>('light');
 	seed = $state<string>();
 	entryTime = $state(0);
