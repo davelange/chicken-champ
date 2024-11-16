@@ -44,4 +44,6 @@ export function addDirectionalLight({
 
 	// light
 	group.add(merged, 'intensity').name('Intensity').min(0).max(20);
+
+	group.close();
 }

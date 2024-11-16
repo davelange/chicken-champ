@@ -8,7 +8,7 @@
 	let config = getConfig();
 	let { store: gameState } = getGameState();
 
-	let time = $state(3);
+	let time = $state(1);
 	let timeout = $state<ReturnType<typeof setTimeout>>();
 	let { onEnd }: { onEnd: () => void } = $props();
 

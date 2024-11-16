@@ -6,27 +6,15 @@ export const RELEVANT_KEYS: string[] = ['w', 'a', 's', 'd', 'Space'];
 export const FALL_THRESHOLD = 0.3;
 export const avatarConfigs = {
 	heavy: {
-		moveBy: 4,
-		angularDamping: 3,
-		gravityScale: 4,
-		contactForceEventThreshold: 1,
-		restitution: 0.1,
-		walk({ force, travel, onEnd }: MotionOptions) {
-			travel
-				.translate({
-					name: 'walkXZ',
-					by: force,
-					duration: 20,
-					easing: 'sineOut',
-					onEnd
-				})
-				.translate({
-					name: 'walkY',
-					to: { y: 3.2 },
-					duration: 12,
-					easing: 'circOut'
-				});
-		},
+		moveBy: 47.1,
+		moveByY: 76.6,
+		mass: 4.22,
+		angularDamping: 5,
+		gravityScale: 15.2,
+		restitution: 0.5,
+		contactForceEventThreshold: 0.1,
+		keyThrottle: 196,
+
 		jump({
 			force,
 			travel,
@@ -78,28 +66,14 @@ export const avatarConfigs = {
 		}
 	},
 	light: {
-		moveBy: 4,
-		angularDamping: 0.2,
-		gravityScale: 4,
+		moveBy: 47.1,
+		moveByY: 76.6,
+		mass: 4.22,
+		angularDamping: 5.5,
+		gravityScale: 15.2,
 		restitution: 0.5,
 		contactForceEventThreshold: 0.1,
-
-		walk({ force, travel, onEnd }: MotionOptions) {
-			travel
-				.translate({
-					name: 'walkXZ',
-					by: force,
-					duration: 20,
-					easing: 'sineOut',
-					onEnd
-				})
-				.translate({
-					name: 'walkY',
-					to: { y: 3.2 },
-					duration: 12,
-					easing: 'circOut'
-				});
-		},
+		keyThrottle: 196,
 
 		jump({
 			force,

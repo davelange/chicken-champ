@@ -7,8 +7,8 @@
 	import { initGameState } from '$lib/game.svelte';
 
 	initConfig();
-	let avatarState = initAvatarState();
 	let gameState = initGameState();
+	let avatarState = initAvatarState();
 </script>
 
 <Canvas>

@@ -38,17 +38,17 @@ export function getAdjustedRotation(currentRot: Quaternion, target: Orientation)
 	return base;
 }
 
-export function getOrientation(data: Axes<number>): Orientation {
-	if (data.x < 0) {
+export function getOrientationFromKeys(data: KeyMap): Orientation {
+	if (data.a) {
 		return 'xNeg';
 	}
-	if (data.x > 0) {
+	if (data.s) {
+		return 'zPos';
+	}
+	if (data.d) {
 		return 'xPos';
 	}
-	if (data.z < 0) {
-		return 'zNeg';
-	}
-	return 'zPos';
+	return 'zNeg';
 }
 
 export function debounce(fn: (args: any) => void, delay: number) {
@@ -57,6 +57,21 @@ export function debounce(fn: (args: any) => void, delay: number) {
 	return (args: any) => {
 		clearTimeout(timeout);
 		timeout = setTimeout(() => fn(args), delay);
+	};
+}
+
+export function throttle<T>(fn: (args: T) => void, interval: number) {
+	let timeout: ReturnType<typeof setTimeout>;
+	let enabled = true;
+
+	return (args: T) => {
+		if (!enabled) return;
+		fn(args);
+		enabled = false;
+		clearTimeout(timeout);
+		timeout = setTimeout(() => {
+			enabled = true;
+		}, interval);
 	};
 }
 

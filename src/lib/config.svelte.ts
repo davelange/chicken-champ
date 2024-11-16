@@ -62,13 +62,16 @@ export class Config {
 		debug.add(this.values, 'axes');
 		debug.add(this.values, 'orbitControls');
 		debug.add(this.values, 'floorGrid');
+		debug.close();
 
 		let cameraGroup = gui.addFolder('Camera');
 		cameraGroup.add(this.values, 'verticalView');
+		cameraGroup.close();
 
 		let colors = gui.addFolder('Colors');
 		colors.addColor(this.values, 'floorColor');
 		colors.addColor(this.values, 'mazeColor');
+		colors.close();
 
 		addDirectionalLight({ gui, params: this.values.lights.directionalLight1, name: 'Light 1' });
 		addDirectionalLight({ gui, params: this.values.lights.directionalLight2, name: 'Light 2' });

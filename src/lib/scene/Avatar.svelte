@@ -2,8 +2,8 @@
 	import { T } from '@threlte/core';
 	import {
 		type RigidBody as RapierRigidBody,
-		TempContactManifold,
-		type Vector
+		type Vector,
+		Vector3
 	} from '@dimforge/rapier3d-compat';
 	import { Collider, RigidBody } from '@threlte/rapier';
 	import { Quaternion } from 'three';
@@ -14,12 +14,12 @@
 		getAdjustedRotation,
 		getForceFromKeymap,
 		getJumpConfig,
-		getOrientation,
+		getOrientationFromKeys,
 		isElement,
 		quaternion,
-		snapToGrid
+		snapToGrid,
+		throttle
 	} from '$lib/utils';
-	import { avatarConfigs } from '$lib/config/avatar';
 	import { onSwipe } from '$lib/swipe';
 	import { getGameState } from '$lib/game.svelte';
 	import { onDestroy } from 'svelte';
@@ -31,16 +31,18 @@
 	};
 
 	let { initialPosition }: AvatarProps = $props();
+
 	let { store: gameState, ...gameEvents } = getGameState();
 	let { store: avatarState, ...avatarEvents } = getAvatarState();
-	let config = $derived(avatarConfigs[gameState.avatarType]);
+
+	let config = avatarState.config;
 	let rigidBody = $state<RapierRigidBody>();
 	let modelState = $state<AvatarPhysicalState>('idle');
 	let qdKeystroke = $state<KeyMap | undefined>(undefined);
 	let collisionLock = $state(false);
 	let collisionLockTimeout: ReturnType<typeof setTimeout>;
-
 	let startPoint = $state<Vector>();
+	let orientation: Orientation = $state('xPos');
 
 	let keyq = onKey();
 	let swipe = onSwipe();
@@ -53,45 +55,30 @@
 		avatarState.lastSafePosition = rigidBody!.worldCom();
 	}
 
-	function updateRotation(force: Axes<number>) {
-		const current = rigidBody!.rotation();
-
-		rigidBody!.setRotation(getAdjustedRotation(current, getOrientation(force)), true);
-	}
-
-	async function applyWalkMotion(key: KeyMap) {
+	async function applyWalkMotion(keys: KeyMap) {
 		if (collisionLock) return;
 
-		let force = getForceFromKeymap(key, config.moveBy);
+		let force = getForceFromKeymap(keys, config.moveBy);
 
-		config.walk({
-			force,
-			travel,
-			onEnd: () => {
-				if (qdKeystroke) {
-					applyWalkMotion(qdKeystroke);
-					qdKeystroke = undefined;
-				}
-			}
-		});
-		updateRotation(force);
+		rigidBody?.resetForces(true);
+		rigidBody?.applyImpulse(new Vector3(force.x, config.moveByY, force.z), true);
+		orientation = getOrientationFromKeys(keys);
 	}
 
-	function applyJumpMotion(key: KeyMap) {
+	function applyJumpMotion(keys: KeyMap) {
 		if (collisionLock || !avatarState.jumpsRemaining) return;
 
 		avatarState.jumpsRemaining--;
-
 		rigidBody?.setGravityScale(0, true);
 		rigidBody?.collider(0).setEnabled(false);
 
-		let force = getForceFromKeymap(key, 8);
+		let force = getForceFromKeymap(keys, 8);
+		orientation = getOrientationFromKeys(keys);
 
-		updateRotation(force);
 		config.jump({
 			force,
 			travel,
-			flipConfig: getJumpConfig(getOrientation(force)),
+			flipConfig: getJumpConfig(orientation),
 			onEnd() {
 				rigidBody?.setGravityScale(config.gravityScale, true);
 			}
@@ -101,21 +88,9 @@
 	function onReset() {
 		const closest = snapToGrid(avatarState.lastSafePosition, 4);
 		rigidBody!.setRotation(new Quaternion(0, 0, 0), true);
+		closest.y = 4;
 		rigidBody!.setTranslation(closest, true);
-
-		travel.translate({
-			by: { y: 10 },
-			duration: 40,
-			easing: 'quintOut',
-			onEnd: () => {
-				travel.translate({
-					by: { y: 0 },
-					duration: 40,
-					easing: 'cubicOut',
-					onEnd: () => (avatarState.fallen = false)
-				});
-			}
-		});
+		avatarState.fallen = false;
 	}
 
 	function onRestartMaze() {
@@ -169,20 +144,15 @@
 
 	// stop animer motion when avatar hits wall
 	function handleMainCollisionEnter({
-		targetRigidBody,
-		manifold
+		targetRigidBody
 	}: {
 		targetRigidBody: RapierRigidBody | null;
-		manifold: TempContactManifold;
 	}) {
-		if (isElement(targetRigidBody, 'maze')) {
-			// Detect if standing on maze
-			if (rigidBody!.translation().y > 5) {
-				// Reset avatar physics
-				rigidBody?.setGravityScale(config.gravityScale, true);
-				travel.stopAll();
-				avatarState.fallen = true;
-			}
+		// Detect if standing on maze
+		if (isElement(targetRigidBody, 'maze') && rigidBody!.translation().y > 5) {
+			rigidBody?.setGravityScale(config.gravityScale, true);
+			travel.stopAll();
+			avatarState.fallen = true;
 		}
 
 		if (isElement(targetRigidBody, 'floor') && !avatarState.fallen) {
@@ -209,14 +179,27 @@
 	// Events
 	avatarEvents.on('reset', onReset);
 	gameEvents.on('restartMaze', onRestartMaze);
-	keyq.on('keyDown', (data) => handleKey(data, 'keyDown'));
-	keyq.on('keyUp', (data) => handleKey(data, 'keyUp'));
+	keyq.on('keyDown', (a) => null);
+	keyq.on(
+		'keyDown',
+		throttle((data) => handleKey(data, 'keyDown'), config.keyThrottle)
+	);
+	keyq.on(
+		'keyUp',
+		throttle((data) => handleKey(data, 'keyUp'), config.keyThrottle)
+	);
 	swipe.on('swipe', (data) => handleKey(data, 'keyUp'));
 
 	onDestroy(() => {
 		keyq.cleanup();
 		gameEvents.cleanup();
 		avatarEvents.cleanup();
+	});
+
+	$effect(() => {
+		const current = rigidBody!.rotation();
+
+		rigidBody!.setRotation(getAdjustedRotation(current, orientation), true);
 	});
 </script>
 
@@ -232,7 +215,7 @@
 		ccd
 	>
 		<Collider
-			mass={1}
+			mass={config.mass}
 			shape="cuboid"
 			args={[1.5, 1.8, 1]}
 			contactForceEventThreshold={config.contactForceEventThreshold}

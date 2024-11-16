@@ -83,7 +83,7 @@
 			dominance={10}
 			enabled={introComplete}
 		>
-			<AutoColliders shape={'cuboid'}>
+			<AutoColliders shape={'cuboid'} restitution={1}>
 				{#each maze as element, ind}
 					<T.Mesh
 						scale={element.dimension}
