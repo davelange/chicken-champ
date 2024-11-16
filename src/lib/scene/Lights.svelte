@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { getConfig } from '$lib/config.svelte';
+	import { getConfig, gui } from '$lib/config.svelte';
 	import { T } from '@threlte/core';
 	import { CameraHelper, DirectionalLight } from 'three';
 	import { DirectionalLightShadow } from 'three/src/lights/DirectionalLightShadow.js';
 
 	let config = getConfig();
 
-	let light = new DirectionalLight();
+	$inspect(config);
+
 	let shadow = new DirectionalLightShadow();
 
 	let d = 80;
@@ -22,11 +23,39 @@
 	shadow.camera.position.set(x, 1, -4);
 
 	const helperCamera = new CameraHelper(shadow.camera);
+
+	let { directionalLight1, directionalLight2 } = config.lights;
 </script>
 
-<T.DirectionalLight position={[3, 20, -4]} intensity={2} {shadow} castShadow {light} />
+<T.DirectionalLight
+	position={[
+		directionalLight1.position.x,
+		directionalLight1.position.y,
+		directionalLight1.position.z
+	]}
+	rotation={[
+		directionalLight1.rotation.x,
+		directionalLight1.rotation.y,
+		directionalLight1.rotation.z
+	]}
+	intensity={directionalLight1.intensity}
+	{shadow}
+	castShadow
+/>
 {#if config.shadowLight}
 	<T is={helperCamera} />
 {/if}
-<T.DirectionalLight position={[-3, 20, 0]} intensity={1} />
+<T.DirectionalLight
+	position={[
+		directionalLight2.position.x,
+		directionalLight2.position.z,
+		directionalLight2.position.y
+	]}
+	rotation={[
+		directionalLight2.rotation.x,
+		directionalLight2.rotation.y,
+		directionalLight2.rotation.z
+	]}
+	intensity={directionalLight2.intensity}
+/>
 <T.AmbientLight intensity={0.5} />

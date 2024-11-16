@@ -15,8 +15,8 @@
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.5.24",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0-next.6",
-		"@types/three": "^0.158.3",
 		"@types/eslint": "^9.6.0",
+		"@types/three": "^0.158.3",
 		"@typescript-eslint/eslint-plugin": "^6.0.0",
 		"@typescript-eslint/parser": "^6.0.0",
 		"autoprefixer": "^10.4.16",
@@ -39,6 +39,7 @@
 		"@threlte/core": "8.0.0-next.15",
 		"@threlte/extras": "9.0.0-next.22",
 		"@threlte/rapier": "3.0.0-next.8",
+		"lil-gui": "^0.19.2",
 		"three": "^0.164.1",
 		"troika-three-text": "^0.49.0"
 	}

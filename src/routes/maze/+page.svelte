@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Scene } from '$lib/scene';
-	import { EndPanel, Config, Timer, ResetHint } from '$lib/components';
+	import { EndPanel, Timer, ResetHint } from '$lib/components';
 	import { Canvas } from '@threlte/core';
 	import { initAvatarState } from '$lib/avatar.svelte';
 	import { initConfig } from '$lib/config.svelte';
@@ -17,7 +17,6 @@
 	{/if}
 </Canvas>
 <Timer />
-<Config />
 
 {#if gameState.status === 'done'}
 	<EndPanel />
