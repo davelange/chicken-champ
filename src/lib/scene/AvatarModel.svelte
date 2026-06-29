@@ -24,7 +24,6 @@
 			ref={mesh}
 			castShadow
 			position={[0.4, 0.75, 0]}
-			geometry={$gltf.nodes.Object_4.geometry}
 			material={$gltf.materials.Material}
 			scale={[0.74, 1, 0.74]}
 			rotation={[0, rotationY, 0]}

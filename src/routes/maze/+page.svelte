@@ -9,6 +9,8 @@
 	initConfig();
 	let gameState = initGameState();
 	let avatarState = initAvatarState();
+
+	$inspect(gameState.seed);
 </script>
 
 <Canvas>

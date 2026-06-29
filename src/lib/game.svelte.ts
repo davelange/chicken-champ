@@ -26,12 +26,14 @@ class GameState {
 	constructor() {
 		const config = getFromUrl(['avatar', 'maze'], new URL(location.href));
 
-		if ((config.avatar === 'heavy' || config.avatar === 'light') && config.maze) {
+		/* if ((config.avatar === 'heavy' || config.avatar === 'light') && config.maze) {
 			this.avatarType = config.avatar;
 			this.seed = config.maze;
 		} else {
 			goto(`/`);
-		}
+		} */
+		this.avatarType = 'light'
+		this.seed = Date.now().toString()
 	}
 
 	goToNewGame() {
